@@ -95,6 +95,60 @@
       <h1 class="view__title" data-i18n="analyze.title"></h1>
       <p class="view__lead" data-i18n="analyze.lead"></p>
     </div>
+
+    <div class="analyze-grid">
+      <div class="card glass glass--dense" id="video-card">
+        <h2 class="card__title"><svg class="icon" aria-hidden="true"><use href="#i-film"/></svg><span data-i18n="analyze.videoTitle"></span></h2>
+        <button type="button" class="drop" id="drop" aria-describedby="drop-hint">
+          <span class="drop__icon"><svg class="icon icon--lg" aria-hidden="true"><use href="#i-upload"/></svg></span>
+          <span class="drop__title" data-i18n="analyze.dropTitle"></span>
+          <span class="drop__hint" id="drop-hint" data-i18n="analyze.dropHint"></span>
+        </button>
+        <input type="file" id="file" accept="video/*,.mp4,.mov,.webm,.m4v,.mkv" hidden>
+        <div class="stack" id="video-box" hidden>
+          <video id="vid" controls muted playsinline preload="auto"></video>
+          <div class="row row--between">
+            <span class="file-name" id="file-name"></span>
+            <button type="button" class="btn btn--secondary btn--sm" id="change-video"><svg class="icon icon--sm" aria-hidden="true"><use href="#i-upload"/></svg><span data-i18n="analyze.change"></span></button>
+          </div>
+          <div class="chips" id="metrics" data-i18n-attr="aria-label:analyze.metrics" role="list"></div>
+          <div class="frames" id="frames" role="list" data-i18n-attr="aria-label:analyze.framesStrip" tabindex="0"></div>
+        </div>
+        <p class="status" id="video-status" aria-live="polite"></p>
+      </div>
+
+      <div class="card glass glass--dense" id="options-card">
+        <h2 class="card__title"><svg class="icon" aria-hidden="true"><use href="#i-sparkles"/></svg><span data-i18n="analyze.optionsTitle"></span></h2>
+        <div class="field">
+          <label class="label label--row" for="nframes"><span data-i18n="analyze.frames"></span><output id="nframes-val" for="nframes">12</output></label>
+          <input type="range" class="range" id="nframes" min="6" max="24" step="1" value="12">
+          <p class="hint" id="req-size" aria-live="polite"></p>
+        </div>
+        <div class="field">
+          <span class="label" id="lbl-level" data-i18n="analyze.level"></span>
+          <div class="seg seg--block glass-inset" role="radiogroup" data-seg="level" aria-labelledby="lbl-level">
+            <span class="seg__thumb" aria-hidden="true"></span>
+            <button class="seg__opt" role="radio" data-value="beginner" data-i18n="level.beginner"></button>
+            <button class="seg__opt" role="radio" data-value="mid" data-i18n="level.mid"></button>
+            <button class="seg__opt" role="radio" data-value="pro" data-i18n="level.pro"></button>
+          </div>
+          <p class="hint" id="level-hint"></p>
+        </div>
+        <div class="field">
+          <label class="label" for="note" data-i18n="analyze.note"></label>
+          <textarea class="textarea" id="note" maxlength="500" rows="2" data-i18n-attr="placeholder:analyze.notePh"></textarea>
+        </div>
+        <p class="hint" id="provider-line"></p>
+        <div class="row">
+          <button type="button" class="btn btn--primary btn--lg" id="go" disabled><svg class="icon" aria-hidden="true"><use href="#i-sparkles"/></svg><span data-i18n="analyze.go"></span></button>
+          <button type="button" class="btn btn--ghost" id="cancel" hidden><svg class="icon" aria-hidden="true"><use href="#i-x"/></svg><span data-i18n="common.cancel"></span></button>
+        </div>
+        <p class="status" id="run-status" aria-live="polite"></p>
+        <div class="row" id="run-actions"></div>
+      </div>
+    </div>
+
+    <div id="result" class="result" hidden></div>
   </section>
 
   <!-- ===================== ИСТОРИЯ ===================== -->
