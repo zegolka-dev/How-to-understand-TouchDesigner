@@ -44,7 +44,7 @@ export function renderChat(slot, session) {
     setStatus(status, 'busy', t('chat.thinking'));
     const history = [...session.history, ...record.chat.map((m) => ({ role: m.role, parts: [{ text: m.text }] }))];
     try {
-      const res = await followUp({ providerId, history, question: q, lang: getLang(), level: record.level });
+      const res = await followUp({ providerId, history, question: q, lang: getLang(), level: record.level, onModel: (m) => setStatus(status, 'busy', t('analyze.switchingModel', { model: m })) });
       record.chat.push({ role: 'user', text: q }, { role: 'model', text: res.text });
       if (retryText) log.append(bubble({ role: 'user', text: q }));
       const a = bubble({ role: 'model', text: res.text });
@@ -56,7 +56,7 @@ export function renderChat(slot, session) {
       qEl?.remove();
       if (!retryText) input.value = q;
       setStatus(status, 'err', errorText(e));
-      const alt = ['server', 'quota', 'notFoundModel', 'empty', 'timeout'].includes(e.code) ? getAltModel(providerId) : null;
+      const alt = ['server', 'quota', 'notFoundModel', 'empty', 'timeout'].includes(e.code) ? getAltModel(providerId, e.triedModels || []) : null;
       if (alt) actions.append(h('button.btn.btn--primary.btn--sm', { type: 'button', on: { click: () => { setModel(providerId, alt); input.value = ''; ask(providerId, q); } } }, icon('refresh', 'icon--sm'), h('span', { text: t('analyze.tryModel', { model: alt }) })));
       const fb = e.quota || e.code === 'server' ? getFallbackId(providerId) : null;
       if (fb) actions.append(h('button.btn.btn--secondary.btn--sm', { type: 'button', on: { click: () => { setActiveId(fb); input.value = ''; ask(fb, q); } } }, icon('refresh', 'icon--sm'), h('span', { text: t('analyze.switchRetry', { provider: getProvider(fb).name }) })));

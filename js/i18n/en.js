@@ -101,6 +101,8 @@ export default {
   'err.quota': 'Free tier limit reached (per minute or per day). Wait a bit or switch to the backup provider.',
   'err.server': 'The model is overloaded or the service is temporarily unavailable. Try another model or retry a bit later.',
   'analyze.tryModel': 'Try model {model}',
+  'analyze.switchingModel': 'Model busy, trying {model}…',
+  'analyze.triedModels': 'Tried models: {models}.',
   'err.network': 'Could not reach the service. Check your connection and try again.',
   'err.timeout': 'The service took too long to respond. Try again or use fewer frames.',
   'err.blocked': 'The request was blocked by the model’s safety filters.',

@@ -177,14 +177,16 @@ async function run(providerId = getActiveId()) {
   S.abort = new AbortController();
   el.cancel.hidden = false;
   const started = Date.now();
-  const tick = () => setStatus(el['run-status'], 'busy', t('analyze.thinking', { s: Math.round((Date.now() - started) / 1000) }));
+  let note2 = '';
+  const tick = () => setStatus(el['run-status'], 'busy', note2 + t('analyze.thinking', { s: Math.round((Date.now() - started) / 1000) }));
   tick();
   const timer = setInterval(tick, 1000);
   const lang = document.documentElement.lang === 'ru' ? 'ru' : 'en';
   const level = currentLevel();
   const note = el.note.value.trim();
   try {
-    const res = await analyze({ providerId, frames: S.frames, times: S.times, metrics: S.metrics, lang, level, note, signal: S.abort.signal });
+    const res = await analyze({ providerId, frames: S.frames, times: S.times, metrics: S.metrics, lang, level, note, signal: S.abort.signal,
+      onModel: (m) => { note2 = t('analyze.switchingModel', { model: m }) + ' '; tick(); updateProviderLine(); } });
     const thumbs = await makeThumbs(S.urls, 4).catch(() => []);
     const record = {
       id: crypto.randomUUID ? crypto.randomUUID() : String(Date.now()) + Math.random().toString(16).slice(2),
@@ -207,10 +209,10 @@ async function run(providerId = getActiveId()) {
 
 function handleError(e, providerId) {
   const err = e instanceof AppError ? e : new AppError('network', { detail: e?.message });
-  setStatus(el['run-status'], err.code === 'aborted' ? '' : 'err', errorText(err));
+  setStatus(el['run-status'], err.code === 'aborted' ? '' : 'err', (err.triedModels?.length > 1 ? t('analyze.triedModels', { models: err.triedModels.join(', ') }) + ' ' : '') + errorText(err));
   const actions = [];
   if (['server', 'quota', 'notFoundModel', 'empty', 'timeout'].includes(err.code)) {
-    const alt = getAltModel(providerId);
+    const alt = getAltModel(providerId, err.triedModels || []);
     if (alt) actions.push(h('button.btn.btn--primary.btn--sm', { type: 'button', on: { click: () => { setModel(providerId, alt); run(providerId); } } },
       icon('refresh', 'icon--sm'), h('span', { text: t('analyze.tryModel', { model: alt }) })));
   }

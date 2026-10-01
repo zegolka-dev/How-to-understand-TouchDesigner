@@ -57,7 +57,7 @@ export function segmented(root, { value, onChange } = {}) {
 }
 
 /* ---------------- Статусы и ошибки ---------------- */
-const WITH_DETAIL = ['badRequest', 'server', 'forbidden', 'blocked', 'empty', 'region'];
+const WITH_DETAIL = ['badRequest', 'server', 'forbidden', 'blocked', 'empty', 'region', 'quota'];
 
 /** Человекочитаемый текст ошибки (AppError или любой). Детали от API выводятся только как текст. */
 export function errorText(e) {

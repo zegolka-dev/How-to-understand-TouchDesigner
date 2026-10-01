@@ -122,7 +122,7 @@ test.describe('ошибки API', () => {
     });
   }
 
-  test('503 «high demand»: автоповтор, затем другая модель одним кликом', async ({ page }) => {
+  test('503 «high demand»: автоматически пробует следующую модель и запоминает её', async ({ page }) => {
     const hits = [];
     await mockNetwork(page, {
       gemini: (route, url) => {
@@ -136,11 +136,23 @@ test.describe('ошибки API', () => {
     await page.goto('/index.html#analyze');
     await loadTestVideo(page);
     await page.click('#go');
-    await expect(page.locator('#run-status')).toContainText('перегружена', { timeout: 15000 });
-    expect(hits.filter((p) => p.includes('gemini-9.9-flash:')).length).toBe(2);
-    await page.getByRole('button', { name: 'Попробовать модель gemini-9.9-flash-lite' }).click();
-    await expect(page.locator('#result .g-node').first()).toBeVisible();
+    await expect(page.locator('#result .g-node').first()).toBeVisible({ timeout: 20000 });
+    expect(hits.filter((p) => p.includes('gemini-9.9-flash:')).length).toBe(2); // запрос + автоповтор
+    expect(hits.some((p) => p.includes('gemini-9.9-flash-lite:'))).toBe(true);
     await expect(page.locator('#provider-line')).toContainText('gemini-9.9-flash-lite');
+  });
+
+  test('все модели в лимите: понятная ошибка, список опробованных, запасной провайдер', async ({ page }) => {
+    await mockNetwork(page, { gemini: (route) => route.fulfill({ status: 429, json: { error: { code: 429, message: 'Quota exceeded for metric: generate_content_free_tier_requests', status: 'RESOURCE_EXHAUSTED' } } }) });
+    const models = JSON.stringify(geminiModels.models.slice(0, 3).map((m) => ({ id: m.name.slice(7), label: m.name.slice(7) })));
+    await presetStorage(page, { 'gemini.models': models, 'openrouter.key': FAKE_OR, 'openrouter.model': 'google/gemma-test:free' });
+    await page.goto('/index.html#analyze');
+    await loadTestVideo(page);
+    await page.click('#go');
+    await expect(page.locator('#run-status')).toContainText('Пробовал модели: gemini-9.9-flash, gemini-9.9-flash-lite, gemini-9.9-pro');
+    await expect(page.locator('#run-status')).toContainText('generate_content_free_tier_requests');
+    await expect(page.getByRole('button', { name: /Попробовать модель/ })).toHaveCount(0);
+    await expect(page.getByRole('button', { name: 'Переключиться на OpenRouter и повторить' })).toBeVisible();
   });
 
   test('429 → переключение на OpenRouter одним кликом', async ({ page }) => {
