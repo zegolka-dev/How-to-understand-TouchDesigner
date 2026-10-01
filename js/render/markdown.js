@@ -2,11 +2,14 @@
 import { escapeHtml as esc } from '../core/dom.js';
 
 function inline(s) {
-  s = esc(s);
-  s = s.replace(/`([^`]+)`/g, '<code>$1</code>');
-  s = s.replace(/\*\*([^*]+)\*\*/g, '<b>$1</b>');
-  s = s.replace(/(^|[^*])\*([^*\s][^*]*)\*/g, '$1<i>$2</i>');
-  return s;
+  // код обрабатываем отдельно, чтобы * внутри выражений не превращались в курсив
+  return String(s).split(/(`[^`]+`)/g).map((part) => {
+    if (/^`[^`]+`$/.test(part)) return '<code>' + esc(part.slice(1, -1)) + '</code>';
+    let x = esc(part);
+    x = x.replace(/\*\*([^*]+)\*\*/g, '<b>$1</b>');
+    x = x.replace(/(^|[^*\w])\*([^*\s][^*]*)\*(?!\w)/g, '$1<i>$2</i>');
+    return x;
+  }).join('');
 }
 
 /** Возвращает безопасную HTML-строку (все данные экранированы). */

@@ -1,0 +1,16 @@
+{
+  "name": "td-explainer",
+  "private": true,
+  "version": "1.0.0",
+  "description": "TD Explainer: dev-зависимости только для тестов; само приложение без сборки.",
+  "type": "module",
+  "scripts": {
+    "serve": "python -m http.server 8765 --bind 127.0.0.1",
+    "fixtures": "node tests/fixtures/make-video.mjs",
+    "test": "node tools/csp-hash.mjs --check && node tools/parse-check.mjs && playwright test",
+    "csp": "node tools/csp-hash.mjs"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.55.0"
+  }
+}

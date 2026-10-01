@@ -1,0 +1,27 @@
+/* Печать / PDF: простая белая вёрстка без стекла, только результат. */
+@media print {
+  :root, html[data-theme="dark"] {
+    --text: #000; --text-2: #333; --text-3: #444; --hairline: #bbb; --accent: #1a3fd6; --accent-soft: #e6ebff;
+    --glass-fill: #fff; --glass-fill-dense: #fff; --glass-fill-inset: #fff; --code-bg: #f1f1f1;
+    --node-fill: #fff; --edge: #555; --graph-bg: #fff; --ok: #0a6b3f; --warn: #7a4e00; --warn-soft: #fff3d6;
+    --fam-top: #6a3fc7; --fam-chop: #1f8a3d; --fam-sop: #1f5ec7; --fam-dat: #a8338f; --fam-comp: #4b5a6d; --fam-mat: #a56f00;
+    color-scheme: light;
+  }
+  @page { margin: 14mm; }
+  body { background: #fff !important; color: #000; font-size: 11pt; }
+  .bg, .topbar, .navpill, .skip-link, .toasts, .view__head, .analyze-grid, .toolbar, .result__chat, .switch-wrap, .sheet-backdrop, #view-history, #view-settings { display: none !important; }
+  main { padding: 0; max-width: none; }
+  .glass, .glass-inset, .card { background: #fff !important; box-shadow: none !important; -webkit-backdrop-filter: none !important; backdrop-filter: none !important; border: 1px solid #ccc; border-radius: 10px; }
+  .glass::before, .glass::after, .glass-inset::before { display: none !important; }
+  .res-card { animation: none !important; break-inside: avoid-page; }
+  .res-steps, .res-graph { break-inside: auto; }
+  .step { break-inside: avoid; background: #fff; }
+  .graph-wrap { overflow: visible; border: 0; padding: 0; }
+  .graph { max-width: 100%; height: auto; }
+  .graph.has-focus .g-node, .graph.has-focus .g-edge { opacity: 1 !important; }
+  .res-details { display: block; }
+  .res-details > :not(summary) { display: block !important; }
+  .step.is-done .step__title, .step.is-done .step__details { opacity: 1; }
+  .step.is-done .step__title::before { content: "✓ "; }
+  a { color: #000; }
+}

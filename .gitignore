@@ -1,5 +1,5 @@
 node_modules/
-tests/screenshots/
-test-results/
 playwright-report/
+test-results/
 tests/fixtures/*.mp4
+tests/screenshots/
