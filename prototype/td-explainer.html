@@ -1,0 +1,466 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TD Explainer — разбор видео из TouchDesigner</title>
+<style>
+  :root{
+    --bg:#0f1115; --panel:#181b22; --panel2:#1f232c; --line:#2a2f3a;
+    --text:#e8eaf0; --muted:#9aa3b2; --accent:#7c5cff; --accent2:#4cc9f0;
+    --ok:#3ddc97; --err:#ff6b6b; --code:#11141a;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);font:15px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+  .wrap{max-width:900px;margin:0 auto;padding:24px 16px 80px}
+  h1{font-size:26px;margin:0 0 4px}
+  h1 span{background:linear-gradient(90deg,var(--accent),var(--accent2));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .sub{color:var(--muted);margin:0 0 20px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:16px}
+  .card h2{font-size:15px;margin:0 0 10px;color:var(--accent2);text-transform:uppercase;letter-spacing:.06em}
+  label{display:block;font-size:13px;color:var(--muted);margin:10px 0 4px}
+  input,select,textarea,button{font:inherit;color:var(--text)}
+  input[type=password],input[type=text],select,textarea{width:100%;background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+  textarea{resize:vertical;min-height:60px}
+  input:focus,select:focus,textarea:focus{outline:2px solid var(--accent);outline-offset:0}
+  .row{display:flex;gap:10px;flex-wrap:wrap}
+  .row>*{flex:1 1 200px}
+  button{background:var(--accent);border:0;border-radius:10px;padding:11px 16px;cursor:pointer;font-weight:600}
+  button:hover{filter:brightness(1.1)}
+  button:disabled{opacity:.5;cursor:not-allowed}
+  button.ghost{background:var(--panel2);border:1px solid var(--line);font-weight:500}
+  a{color:var(--accent2)}
+  .hint{font-size:13px;color:var(--muted);margin-top:6px}
+  .drop{border:2px dashed var(--line);border-radius:14px;padding:28px 16px;text-align:center;color:var(--muted);cursor:pointer;transition:.15s}
+  .drop.over{border-color:var(--accent);background:rgba(124,92,255,.08);color:var(--text)}
+  video{width:100%;max-height:360px;border-radius:10px;background:#000;margin-top:12px}
+  .frames{display:flex;gap:6px;overflow-x:auto;margin-top:10px;padding-bottom:6px}
+  .frames img{height:64px;border-radius:6px;border:1px solid var(--line)}
+  .status{margin-top:10px;font-size:14px;min-height:20px}
+  .status.err{color:var(--err)} .status.ok{color:var(--ok)}
+  .metrics{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+  .chip{background:var(--panel2);border:1px solid var(--line);border-radius:999px;padding:4px 10px;font-size:12px;color:var(--muted)}
+  .sw{display:inline-block;width:12px;height:12px;border-radius:3px;vertical-align:-1px;margin-right:4px;border:1px solid #0006}
+  .out h1,.out h2,.out h3{margin:18px 0 8px}
+  .out h1{font-size:20px} .out h2{font-size:18px;color:var(--accent2)} .out h3{font-size:16px}
+  .out p{margin:8px 0}
+  .out ul,.out ol{margin:8px 0;padding-left:22px}
+  .out li{margin:4px 0}
+  .out code{background:var(--code);border:1px solid var(--line);border-radius:5px;padding:1px 6px;font:13px ui-monospace,Consolas,monospace}
+  .out pre{background:var(--code);border:1px solid var(--line);border-radius:10px;padding:12px;overflow-x:auto}
+  .out pre code{background:none;border:0;padding:0}
+  .msg-user{background:var(--panel2);border-radius:10px;padding:8px 12px;margin:16px 0 4px;color:var(--muted);font-size:14px}
+  .spin{display:inline-block;width:14px;height:14px;border:2px solid var(--line);border-top-color:var(--accent2);border-radius:50%;animation:s .8s linear infinite;vertical-align:-2px;margin-right:8px}
+  @keyframes s{to{transform:rotate(360deg)}}
+  .actions{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+  details summary{cursor:pointer;color:var(--muted)}
+  @media(max-width:520px){h1{font-size:22px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1><span>TD Explainer</span></h1>
+  <p class="sub">Загрузи видео, сделанное в TouchDesigner, и получи пошаговую инструкцию: какие ноды взять, как соединить и какие значения поставить.</p>
+
+  <div class="card">
+    <h2>1. Ключ Google Gemini (бесплатно)</h2>
+    <label for="key">API-ключ</label>
+    <input id="key" type="password" placeholder="AIza..." autocomplete="off">
+    <div class="hint">
+      Ключ берётся бесплатно на <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">aistudio.google.com/apikey</a>.
+      Он хранится только в твоём браузере и отправляется только в Google. У бесплатного тарифа есть дневные лимиты, их хватает на несколько разборов.
+    </div>
+    <div class="row" style="margin-top:6px">
+      <div>
+        <label for="model">Модель</label>
+        <select id="model">
+          <option value="gemini-2.5-flash">gemini-2.5-flash</option>
+          <option value="gemini-2.5-flash-lite">gemini-2.5-flash-lite</option>
+          <option value="gemini-2.0-flash">gemini-2.0-flash</option>
+        </select>
+      </div>
+      <div style="align-self:end"><button class="ghost" id="refresh" type="button">Обновить список моделей</button></div>
+    </div>
+    <div class="hint">Если выдаёт ошибку про модель, нажми «Обновить список моделей» и выбери другую с «flash» в названии.</div>
+  </div>
+
+  <div class="card">
+    <h2>2. Видео</h2>
+    <div class="drop" id="drop">Перетащи видео сюда или нажми, чтобы выбрать файл<br><small>mp4, mov, webm. Видео не загружается на сервер: из него в твоём браузере берутся кадры.</small></div>
+    <input id="file" type="file" accept="video/*" hidden>
+    <video id="vid" controls muted playsinline hidden></video>
+    <div class="metrics" id="metrics"></div>
+    <div class="frames" id="frames"></div>
+
+    <div class="row" style="margin-top:6px">
+      <div>
+        <label for="nframes">Сколько кадров отправить: <b id="nfv">12</b></label>
+        <input id="nframes" type="range" min="6" max="24" value="12" style="width:100%">
+      </div>
+      <div>
+        <label for="level">Уровень объяснения</label>
+        <select id="level">
+          <option value="beginner">Новичок: подробно, с пояснениями, где что искать</option>
+          <option value="mid" selected>Средний: чётко, без лишней воды</option>
+          <option value="pro">Продвинутый: кратко, с выражениями и GLSL</option>
+        </select>
+      </div>
+    </div>
+    <label for="note">Что особенно интересует (необязательно)</label>
+    <textarea id="note" placeholder="Например: как сделан шлейф за объектами, или как всё пульсирует под музыку"></textarea>
+    <div class="actions"><button id="go" disabled>Разобрать видео</button></div>
+    <div class="status" id="status"></div>
+  </div>
+
+  <div class="card out" id="resultCard" hidden>
+    <h2 style="margin-bottom:0">Результат</h2>
+    <div id="result"></div>
+    <div class="actions">
+      <button class="ghost" id="copy" type="button">Скопировать текст</button>
+    </div>
+    <label for="follow">Задать уточняющий вопрос</label>
+    <div class="row">
+      <input type="text" id="follow" placeholder="Например: как именно настроить Feedback TOP?" style="flex:3 1 260px">
+      <button id="ask" style="flex:0 0 auto">Спросить</button>
+    </div>
+  </div>
+
+  <p class="hint">Важно: по видео нельзя узнать точные параметры, это разбор «по результату». Значения в инструкции — стартовые, их нужно подстраивать на глаз.</p>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var $ = function(id){return document.getElementById(id)};
+  var API = "https://generativelanguage.googleapis.com/v1beta";
+  var state = { frames: [], metrics: null, history: [], lastText: "", busy: false, duration: 0, w: 0, h: 0 };
+
+  // ---------- хранение ключа (необязательно) ----------
+  function lsGet(k){ try{ return localStorage.getItem(k) }catch(e){ return null } }
+  function lsSet(k,v){ try{ localStorage.setItem(k,v) }catch(e){} }
+  $("key").value = lsGet("tdx_key") || "";
+  var savedModel = lsGet("tdx_model");
+  if(savedModel){ ensureModelOption(savedModel); $("model").value = savedModel; }
+  $("key").addEventListener("input", function(){ lsSet("tdx_key", $("key").value.trim()); updateGo(); });
+  $("model").addEventListener("change", function(){ lsSet("tdx_model", $("model").value); });
+  $("nframes").addEventListener("input", function(){ $("nfv").textContent = $("nframes").value; });
+  $("nframes").addEventListener("change", function(){ if($("vid").src) extract(); });
+
+  function ensureModelOption(name){
+    var sel = $("model");
+    for(var i=0;i<sel.options.length;i++){ if(sel.options[i].value===name) return; }
+    var o = document.createElement("option"); o.value=name; o.textContent=name; sel.appendChild(o);
+  }
+
+  function setStatus(msg, cls, spin){
+    var s = $("status");
+    s.className = "status" + (cls ? " "+cls : "");
+    s.innerHTML = "";
+    if(spin){ var sp=document.createElement("span"); sp.className="spin"; s.appendChild(sp); }
+    s.appendChild(document.createTextNode(msg||""));
+  }
+  function updateGo(){ $("go").disabled = !(state.frames.length && $("key").value.trim()) || state.busy; }
+
+  // ---------- список моделей ----------
+  $("refresh").addEventListener("click", function(){
+    var key = $("key").value.trim();
+    if(!key){ setStatus("Сначала вставь API-ключ.", "err"); return; }
+    setStatus("Загружаю список моделей…", "", true);
+    fetch(API + "/models?pageSize=200", { headers: {"x-goog-api-key": key} })
+      .then(function(r){ return r.json().then(function(j){ return {ok:r.ok, j:j}; }); })
+      .then(function(res){
+        if(!res.ok) throw new Error((res.j.error && res.j.error.message) || "Не удалось получить список");
+        var names = (res.j.models||[])
+          .filter(function(m){ return (m.supportedGenerationMethods||[]).indexOf("generateContent")>=0; })
+          .map(function(m){ return m.name.replace(/^models\//,""); })
+          .filter(function(n){ return /^gemini/.test(n) && !/(tts|image|embedding|live|audio|robotics|computer)/.test(n); });
+        if(!names.length) throw new Error("Подходящих моделей не найдено");
+        names.sort(function(a,b){
+          var fa=/flash/.test(a)?0:1, fb=/flash/.test(b)?0:1;
+          return fa-fb || (a<b?1:-1);
+        });
+        var sel=$("model"); var cur=sel.value; sel.innerHTML="";
+        names.forEach(function(n){ var o=document.createElement("option"); o.value=n; o.textContent=n; sel.appendChild(o); });
+        sel.value = names.indexOf(cur)>=0 ? cur : names[0];
+        lsSet("tdx_model", sel.value);
+        setStatus("Список моделей обновлён ("+names.length+").", "ok");
+      })
+      .catch(function(e){ setStatus("Ошибка: "+e.message, "err"); });
+  });
+
+  // ---------- загрузка видео ----------
+  var drop = $("drop"), file = $("file"), vid = $("vid");
+  drop.addEventListener("click", function(){ file.click(); });
+  ["dragenter","dragover"].forEach(function(ev){ drop.addEventListener(ev, function(e){ e.preventDefault(); drop.classList.add("over"); }); });
+  ["dragleave","drop"].forEach(function(ev){ drop.addEventListener(ev, function(e){ e.preventDefault(); drop.classList.remove("over"); }); });
+  drop.addEventListener("drop", function(e){ if(e.dataTransfer.files[0]) loadFile(e.dataTransfer.files[0]); });
+  file.addEventListener("change", function(){ if(file.files[0]) loadFile(file.files[0]); });
+
+  function loadFile(f){
+    if(!/^video\//.test(f.type) && !/\.(mp4|mov|webm|mkv|m4v)$/i.test(f.name)){ setStatus("Это не видеофайл.", "err"); return; }
+    state.frames = []; state.metrics = null; state.history = []; $("resultCard").hidden = true;
+    $("frames").innerHTML = ""; $("metrics").innerHTML = "";
+    if(vid.src) URL.revokeObjectURL(vid.src);
+    vid.src = URL.createObjectURL(f);
+    vid.hidden = false;
+    setStatus("Читаю видео…", "", true);
+    vid.onloadedmetadata = function(){
+      state.duration = vid.duration; state.w = vid.videoWidth; state.h = vid.videoHeight;
+      if(!isFinite(state.duration) || !state.duration){ setStatus("Не удалось определить длительность видео.", "err"); return; }
+      extract();
+    };
+    vid.onerror = function(){ setStatus("Браузер не смог открыть этот формат. Попробуй mp4 (H.264) или webm.", "err"); };
+  }
+
+  function seek(t){
+    return new Promise(function(resolve, reject){
+      var done = false;
+      function ok(){ if(done) return; done=true; vid.removeEventListener("seeked", ok); resolve(); }
+      vid.addEventListener("seeked", ok);
+      vid.currentTime = t;
+      setTimeout(function(){ if(!done){ vid.removeEventListener("seeked", ok); done=true; reject(new Error("seek timeout")); } }, 8000);
+    });
+  }
+
+  async function extract(){
+    var n = parseInt($("nframes").value, 10);
+    var dur = state.duration;
+    var maxW = 768;
+    var scale = Math.min(1, maxW / state.w);
+    var cw = Math.max(2, Math.round(state.w*scale)), ch = Math.max(2, Math.round(state.h*scale));
+    var cv = document.createElement("canvas"); cv.width = cw; cv.height = ch;
+    var cx = cv.getContext("2d", {willReadFrequently:true});
+    var sm = document.createElement("canvas"); sm.width = 64; sm.height = 36;
+    var sx = sm.getContext("2d", {willReadFrequently:true});
+    var frames = [], times = [], smalls = [], colorCount = {}, lumSum = 0, lumN = 0;
+    var wasPaused = vid.paused; vid.pause();
+    $("frames").innerHTML = "";
+    try{
+      for(var i=0;i<n;i++){
+        var t = Math.min(dur-0.05, Math.max(0, (i+0.5)/n*dur));
+        setStatus("Беру кадры: "+(i+1)+" из "+n+"…", "", true);
+        await seek(t);
+        cx.drawImage(vid, 0, 0, cw, ch);
+        var url = cv.toDataURL("image/jpeg", 0.72);
+        frames.push(url.split(",")[1]); times.push(t);
+        var im = document.createElement("img"); im.src = url; im.title = t.toFixed(1)+" с"; $("frames").appendChild(im);
+        sx.drawImage(vid, 0, 0, 64, 36);
+        var d = sx.getImageData(0,0,64,36).data;
+        smalls.push(new Uint8ClampedArray(d));
+        for(var p=0;p<d.length;p+=16){
+          var r=d[p],g=d[p+1],b=d[p+2];
+          lumSum += 0.2126*r+0.7152*g+0.0722*b; lumN++;
+          var key = (r>>6)+","+(g>>6)+","+(b>>6);
+          colorCount[key] = (colorCount[key]||0)+1;
+        }
+      }
+    }catch(e){
+      setStatus("Не получилось взять кадры: "+e.message, "err"); return;
+    }
+    // метрики
+    function diff(a,b){ var s=0,c=0; for(var k=0;k<a.length;k+=4){ s+=Math.abs(a[k]-b[k])+Math.abs(a[k+1]-b[k+1])+Math.abs(a[k+2]-b[k+2]); c+=3; } return s/c/255; }
+    var motion = 0; for(var j=1;j<smalls.length;j++) motion += diff(smalls[j-1], smalls[j]);
+    motion = smalls.length>1 ? motion/(smalls.length-1) : 0;
+    var loopDiff = diff(smalls[0], smalls[smalls.length-1]);
+    var top = Object.keys(colorCount).sort(function(a,b){return colorCount[b]-colorCount[a]}).slice(0,5).map(function(k){
+      var q = k.split(",").map(function(x){ return Math.min(255, parseInt(x,10)*64+32); });
+      return "#"+q.map(function(x){ return ("0"+x.toString(16)).slice(-2); }).join("");
+    });
+    state.frames = frames; state.times = times;
+    state.metrics = {
+      duration: dur, w: state.w, h: state.h,
+      motion: motion, loopDiff: loopDiff, brightness: lumN ? lumSum/lumN/255 : 0, palette: top
+    };
+    renderMetrics();
+    setStatus("Кадры готовы. Можно разбирать.", "ok");
+    vid.currentTime = 0; if(!wasPaused) vid.play();
+    updateGo();
+  }
+
+  function motionWord(m){ return m<0.02?"очень медленное":m<0.06?"плавное":m<0.15?"заметное":"очень быстрое/резкое"; }
+  function renderMetrics(){
+    var m = state.metrics, box = $("metrics"); box.innerHTML = "";
+    function chip(html){ var c=document.createElement("span"); c.className="chip"; c.innerHTML=html; box.appendChild(c); }
+    chip(m.w+"×"+m.h);
+    chip(m.duration.toFixed(1)+" с");
+    chip("движение: "+motionWord(m.motion));
+    chip(m.loopDiff<0.04 ? "похоже на зацикленное" : "не зациклено");
+    chip("яркость: "+Math.round(m.brightness*100)+"%");
+    chip(m.palette.map(function(c){ return '<span class="sw" style="background:'+c+'"></span>'; }).join("") + "палитра");
+  }
+
+  // ---------- системный промпт ----------
+  var SYSTEM = [
+    "Ты опытный TouchDesigner-разработчик и преподаватель. Пользователь присылает кадры из видео, сделанного в TouchDesigner, и метрики анализа.",
+    "Твоя задача: объяснить, как своими руками собрать такой же визуал в TouchDesigner. Отвечай по-русски.",
+    "",
+    "Правила:",
+    "- Используй точные названия операторов TouchDesigner с типом: Noise TOP, Feedback TOP, Composite TOP, Transform TOP, Displace TOP, Level TOP, Blur TOP, Edge TOP, Ramp TOP, Mirror/Tile TOP, GLSL TOP, Render TOP, Geometry COMP, Camera COMP, Light COMP, Constant MAT, Phong MAT, Instance через вкладку Instancing, Grid SOP, Sphere SOP, Noise SOP, Lfo CHOP, Noise CHOP, Math CHOP, Audio Spectrum CHOP, Audio Device In CHOP, Null, Out и т.д.",
+    "- Называй названия параметров так, как они в интерфейсе (например Type, Period, Harmonics, Amplitude, Pre Fit Overlay, Blend Mode, Opacity), и давай стартовые значения.",
+    "- Описывай, что с чем соединять (выход какой ноды в какой вход).",
+    "- Для анимации давай рабочие выражения, например absTime.seconds*0.2 или op('lfo1')['chan1'].",
+    "- НЕ выдумывай. Если по кадрам нельзя точно определить приём, так и пиши («вероятно», «возможно») и предлагай 1-2 варианта. Отдельно помечай значения как приблизительные.",
+    "- Если на видео явно не TouchDesigner или невозможно понять приём, скажи об этом прямо.",
+    "- Не раздувай ответ: только то, что реально видно и нужно для повторения.",
+    "",
+    "Структура ответа (в Markdown):",
+    "## Что на видео",
+    "Короткое описание визуала и динамики (2-4 предложения).",
+    "## Использованные приёмы",
+    "Список приёмов (например feedback-шлейфы, displace, instancing, постобработка) и по одной строке, что каждый даёт.",
+    "## Схема нод",
+    "Блок кода со схемой цепочки в виде стрелок, например: noise1 -> level1 -> composite1 -> out1.",
+    "## Пошаговая инструкция",
+    "Нумерованные шаги. В каждом: какую ноду создать (Tab-меню), ключевые параметры со значениями, с чем соединить, зачем это нужно.",
+    "## Анимация и управление",
+    "Какие CHOP/выражения двигают картинку, как сделать зацикливание и реакцию на звук, если это видно.",
+    "## Постобработка и цвет",
+    "Level, Bloom, Chromatic aberration, Glow, зерно и т.п.",
+    "## Что подстроить на глаз",
+    "Какие параметры нужно покрутить, чтобы приблизиться к оригиналу, и что осталось неизвестным."
+  ].join("\n");
+
+  function levelText(l){
+    if(l==="beginner") return "Уровень пользователя: новичок. Объясняй подробно, подсказывай, как найти ноду (Tab → название), что такое TOP/CHOP/SOP, куда нажимать.";
+    if(l==="pro") return "Уровень пользователя: продвинутый. Пиши кратко и плотно, можно предлагать GLSL, Python-выражения и оптимизацию, базовые вещи не объясняй.";
+    return "Уровень пользователя: средний. Пиши чётко, без лишних базовых объяснений.";
+  }
+
+  // ---------- запрос к Gemini ----------
+  function callGemini(contents){
+    var key = $("key").value.trim(), model = $("model").value;
+    var body = {
+      system_instruction: { parts: [{ text: SYSTEM + "\n\n" + levelText($("level").value) }] },
+      contents: contents,
+      generationConfig: { temperature: 0.4, maxOutputTokens: 8192 }
+    };
+    return fetch(API + "/models/" + encodeURIComponent(model) + ":generateContent", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "x-goog-api-key": key },
+      body: JSON.stringify(body)
+    }).then(function(r){
+      return r.json().catch(function(){ return {}; }).then(function(j){
+        if(!r.ok){
+          var msg = (j.error && j.error.message) || ("HTTP "+r.status);
+          if(r.status===429) msg = "Достигнут лимит бесплатного тарифа Gemini (запросов в минуту или в день). Подожди немного и попробуй снова, или выбери другую модель (например flash-lite).";
+          else if(r.status===400 && /API key/i.test(msg)) msg = "Ключ не подходит. Проверь, что скопировал его целиком.";
+          else if(r.status===404) msg = "Такой модели нет. Нажми «Обновить список моделей» и выбери другую.";
+          else if(r.status===403) msg = "Доступ запрещён: ключ неверный или в твоём регионе нет доступа к API ("+msg+").";
+          throw new Error(msg);
+        }
+        var c = j.candidates && j.candidates[0];
+        if(!c){
+          var br = j.promptFeedback && j.promptFeedback.blockReason;
+          throw new Error(br ? "Запрос заблокирован: "+br : "Пустой ответ от модели");
+        }
+        var text = (c.content && c.content.parts || []).map(function(p){ return p.text||""; }).join("");
+        if(!text) throw new Error("Модель вернула пустой ответ (причина: "+(c.finishReason||"неизвестно")+")");
+        return text;
+      });
+    });
+  }
+
+  function buildFirstTurn(){
+    var m = state.metrics;
+    var intro = "Вот "+state.frames.length+" кадров, равномерно взятых из видео TouchDesigner (по порядку, время каждого указано перед кадром).\n" +
+      "Метрики: размер "+m.w+"x"+m.h+", длительность "+m.duration.toFixed(1)+" с; среднее изменение между соседними кадрами "+(m.motion*100).toFixed(1)+"% ("+motionWord(m.motion)+" движение); " +
+      "разница первого и последнего кадра "+(m.loopDiff*100).toFixed(1)+"% ("+(m.loopDiff<0.04?"вероятно, видео зациклено":"вероятно, не зациклено")+"); средняя яркость "+Math.round(m.brightness*100)+"%; доминирующие цвета: "+m.palette.join(", ")+".\n" +
+      "Кадры взяты редко, поэтому быстрые детали между ними не видны.";
+    var note = $("note").value.trim();
+    var parts = [{ text: intro + (note ? "\nПожелание пользователя: "+note : "") + "\nРазбери и объясни, как это собрать." }];
+    state.frames.forEach(function(b64, i){
+      parts.push({ text: "Кадр "+(i+1)+", t="+state.times[i].toFixed(1)+" с:" });
+      parts.push({ inline_data: { mime_type: "image/jpeg", data: b64 } });
+    });
+    return { role: "user", parts: parts };
+  }
+
+  $("go").addEventListener("click", function(){
+    if(state.busy) return;
+    state.busy = true; updateGo();
+    setStatus("Модель разбирает кадры… обычно это занимает 10-40 секунд.", "", true);
+    var first = buildFirstTurn();
+    state.history = [first];
+    callGemini(state.history).then(function(text){
+      state.history.push({ role: "model", parts: [{ text: text }] });
+      state.lastText = text;
+      $("result").innerHTML = md(text);
+      $("resultCard").hidden = false;
+      $("resultCard").scrollIntoView({ behavior: "smooth", block: "start" });
+      setStatus("Готово.", "ok");
+    }).catch(function(e){
+      state.history = [];
+      setStatus("Ошибка: "+e.message, "err");
+    }).then(function(){ state.busy = false; updateGo(); });
+  });
+
+  function ask(){
+    var q = $("follow").value.trim();
+    if(!q || state.busy || !state.history.length) return;
+    state.busy = true; $("ask").disabled = true; updateGo();
+    setStatus("Думаю над ответом…", "", true);
+    state.history.push({ role: "user", parts: [{ text: q }] });
+    var qe = document.createElement("div"); qe.className = "msg-user"; qe.textContent = q;
+    $("result").appendChild(qe);
+    callGemini(state.history).then(function(text){
+      state.history.push({ role: "model", parts: [{ text: text }] });
+      state.lastText += "\n\n---\nВопрос: "+q+"\n\n"+text;
+      var d = document.createElement("div"); d.innerHTML = md(text); $("result").appendChild(d);
+      $("follow").value = ""; setStatus("Готово.", "ok");
+      d.scrollIntoView({ behavior:"smooth", block:"start" });
+    }).catch(function(e){
+      state.history.pop(); qe.remove();
+      setStatus("Ошибка: "+e.message, "err");
+    }).then(function(){ state.busy = false; $("ask").disabled = false; updateGo(); });
+  }
+  $("ask").addEventListener("click", ask);
+  $("follow").addEventListener("keydown", function(e){ if(e.key==="Enter") ask(); });
+
+  $("copy").addEventListener("click", function(){
+    var t = state.lastText;
+    function done(){ var b=$("copy"); var o=b.textContent; b.textContent="Скопировано"; setTimeout(function(){ b.textContent=o; }, 1500); }
+    if(navigator.clipboard && navigator.clipboard.writeText){ navigator.clipboard.writeText(t).then(done, fallback); } else fallback();
+    function fallback(){ var ta=document.createElement("textarea"); ta.value=t; document.body.appendChild(ta); ta.select(); try{ document.execCommand("copy"); done(); }catch(e){} ta.remove(); }
+  });
+
+  // ---------- мини-рендер Markdown (с экранированием) ----------
+  function esc(s){ return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+  function inline(s){
+    s = esc(s);
+    s = s.replace(/`([^`]+)`/g, "<code>$1</code>");
+    s = s.replace(/\*\*([^*]+)\*\*/g, "<b>$1</b>");
+    s = s.replace(/(^|[^*])\*([^*\s][^*]*)\*/g, "$1<i>$2</i>");
+    return s;
+  }
+  function md(src){
+    var lines = src.replace(/\r/g,"").split("\n"), out = [], i = 0, list = null;
+    function closeList(){ if(list){ out.push("</"+list+">"); list = null; } }
+    while(i < lines.length){
+      var ln = lines[i];
+      if(/^```/.test(ln)){
+        closeList();
+        var buf = []; i++;
+        while(i < lines.length && !/^```/.test(lines[i])){ buf.push(lines[i]); i++; }
+        i++;
+        out.push("<pre><code>"+esc(buf.join("\n"))+"</code></pre>");
+        continue;
+      }
+      var h = ln.match(/^(#{1,4})\s+(.*)$/);
+      if(h){ closeList(); var lvl = Math.min(3, h[1].length); out.push("<h"+lvl+">"+inline(h[2])+"</h"+lvl+">"); i++; continue; }
+      var ol = ln.match(/^\s*\d+[.)]\s+(.*)$/);
+      var ul = ln.match(/^\s*[-*•]\s+(.*)$/);
+      if(ol){ if(list!=="ol"){ closeList(); out.push("<ol>"); list="ol"; } out.push("<li>"+inline(ol[1])+"</li>"); i++; continue; }
+      if(ul){ if(list!=="ul"){ closeList(); out.push("<ul>"); list="ul"; } out.push("<li>"+inline(ul[1])+"</li>"); i++; continue; }
+      if(/^\s*---+\s*$/.test(ln)){ closeList(); out.push("<hr style='border:0;border-top:1px solid var(--line)'>"); i++; continue; }
+      if(!ln.trim()){ closeList(); i++; continue; }
+      closeList(); out.push("<p>"+inline(ln)+"</p>"); i++;
+    }
+    closeList();
+    return out.join("\n");
+  }
+
+  updateGo();
+})();
+</script>
+</body>
+</html>
