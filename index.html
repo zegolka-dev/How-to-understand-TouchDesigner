@@ -135,10 +135,18 @@
     <div class="card glass glass--dense" id="providers-card">
       <h2 class="card__title"><svg class="icon" aria-hidden="true"><use href="#i-key"/></svg><span data-i18n="settings.providers"></span></h2>
       <p class="hint" data-i18n="settings.keyPrivacy"></p>
+      <div class="setting">
+        <span class="label" id="lbl-active" data-i18n="settings.active"></span>
+        <div class="seg glass-inset" role="radiogroup" data-seg="provider" aria-labelledby="lbl-active">
+          <span class="seg__thumb" aria-hidden="true"></span>
+          <button class="seg__opt" role="radio" data-value="gemini">Gemini</button>
+          <button class="seg__opt" role="radio" data-value="openrouter">OpenRouter</button>
+        </div>
+      </div>
 
       <div class="provider glass-inset" data-provider="gemini">
         <div class="provider__head">
-          <span class="provider__name">Google Gemini <span class="badge" data-i18n="settings.main"></span></span>
+          <span class="provider__name">Google Gemini <span class="badge"></span></span>
           <a class="btn btn--ghost btn--sm" href="https://aistudio.google.com/apikey" target="_blank" rel="noopener noreferrer"><span data-i18n="settings.getKey"></span><svg class="icon icon--sm" aria-hidden="true"><use href="#i-external"/></svg></a>
         </div>
         <div class="field">
@@ -148,14 +156,23 @@
             <button class="btn btn--secondary btn--icon" type="button" data-toggle-key="key-gemini" aria-pressed="false" data-i18n-attr="aria-label:settings.showKey;title:settings.showKey"><svg class="icon" aria-hidden="true"><use href="#i-eye"/></svg></button>
           </div>
         </div>
+        <div class="field">
+          <label class="label" for="model-gemini" data-i18n="settings.model"></label>
+          <div class="input-group">
+            <select class="select" id="model-gemini" data-model="gemini"></select>
+            <button class="btn btn--secondary btn--icon" type="button" data-refresh="gemini" data-i18n-attr="aria-label:settings.refreshModels;title:settings.refreshModels"><svg class="icon" aria-hidden="true"><use href="#i-refresh"/></svg></button>
+          </div>
+        </div>
         <div class="row">
+          <button class="btn btn--secondary btn--sm" type="button" data-test="gemini"><svg class="icon icon--sm" aria-hidden="true"><use href="#i-check"/></svg><span data-i18n="settings.test"></span></button>
           <button class="btn btn--ghost btn--sm btn--danger" type="button" data-forget="gemini"><svg class="icon icon--sm" aria-hidden="true"><use href="#i-trash"/></svg><span data-i18n="settings.forgetKey"></span></button>
         </div>
+        <p class="status" data-status="gemini" aria-live="polite"></p>
       </div>
 
       <div class="provider glass-inset" data-provider="openrouter">
         <div class="provider__head">
-          <span class="provider__name">OpenRouter <span class="badge badge--muted" data-i18n="settings.backup"></span></span>
+          <span class="provider__name">OpenRouter <span class="badge badge--muted"></span></span>
           <a class="btn btn--ghost btn--sm" href="https://openrouter.ai/settings/keys" target="_blank" rel="noopener noreferrer"><span data-i18n="settings.getKey"></span><svg class="icon icon--sm" aria-hidden="true"><use href="#i-external"/></svg></a>
         </div>
         <div class="field">
@@ -165,10 +182,25 @@
             <button class="btn btn--secondary btn--icon" type="button" data-toggle-key="key-openrouter" aria-pressed="false" data-i18n-attr="aria-label:settings.showKey;title:settings.showKey"><svg class="icon" aria-hidden="true"><use href="#i-eye"/></svg></button>
           </div>
         </div>
+        <div class="field">
+          <label class="label" for="model-openrouter" data-i18n="settings.model"></label>
+          <div class="input-group">
+            <select class="select" id="model-openrouter" data-model="openrouter"></select>
+            <button class="btn btn--secondary btn--icon" type="button" data-refresh="openrouter" data-i18n-attr="aria-label:settings.refreshModels;title:settings.refreshModels"><svg class="icon" aria-hidden="true"><use href="#i-refresh"/></svg></button>
+          </div>
+        </div>
         <div class="row">
+          <button class="btn btn--secondary btn--sm" type="button" data-test="openrouter"><svg class="icon icon--sm" aria-hidden="true"><use href="#i-check"/></svg><span data-i18n="settings.test"></span></button>
           <button class="btn btn--ghost btn--sm btn--danger" type="button" data-forget="openrouter"><svg class="icon icon--sm" aria-hidden="true"><use href="#i-trash"/></svg><span data-i18n="settings.forgetKey"></span></button>
         </div>
+        <p class="status" data-status="openrouter" aria-live="polite"></p>
       </div>
+    </div>
+
+    <div class="card glass glass--dense">
+      <h2 class="card__title"><svg class="icon" aria-hidden="true"><use href="#i-info"/></svg><span data-i18n="settings.help"></span></h2>
+      <p class="muted" data-i18n="settings.helpText"></p>
+      <div class="row"><button class="btn btn--secondary" type="button" id="open-onboarding"><svg class="icon" aria-hidden="true"><use href="#i-sparkles"/></svg><span data-i18n="settings.openOnboarding"></span></button></div>
     </div>
   </section>
 </main>

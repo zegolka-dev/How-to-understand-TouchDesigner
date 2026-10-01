@@ -56,6 +56,29 @@ export function segmented(root, { value, onChange } = {}) {
   return { set: (v) => { current = v; render(); }, get: () => current, place };
 }
 
+/* ---------------- Статусы и ошибки ---------------- */
+const WITH_DETAIL = ['badRequest', 'server', 'forbidden', 'blocked', 'empty', 'region'];
+
+/** Человекочитаемый текст ошибки (AppError или любой). Детали от API выводятся только как текст. */
+export function errorText(e) {
+  const code = e?.code || 'network';
+  let msg = t('err.' + code);
+  if (msg === 'err.' + code) msg = t('err.network');
+  if (e?.detail && WITH_DETAIL.includes(code)) msg += ' — ' + e.detail;
+  return msg;
+}
+
+/** Статусная строка: type = ok | err | warn | busy | '' */
+export function setStatus(el, type, text) {
+  if (!el) return;
+  el.className = 'status' + (type && type !== 'busy' ? ' status--' + type : '');
+  el.replaceChildren();
+  if (!text) return;
+  if (type === 'busy') el.append(h('span.spinner', { 'aria-hidden': 'true' }));
+  else if (type) el.append(icon(type === 'ok' ? 'check' : type === 'err' ? 'alert' : 'info', 'icon--sm'));
+  el.append(h('span', { text }));
+}
+
 /* ---------------- Тосты ---------------- */
 export function toast(message, { type = 'info', action, timeout = 5000 } = {}) {
   const box = $('#toasts');

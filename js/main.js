@@ -5,6 +5,7 @@ import { initI18n, setLang, getLang } from './core/i18n.js';
 import { initTheme, setThemeMode, getThemeMode } from './core/theme.js';
 import { segmented, initNav } from './views/ui.js';
 import { initSettings } from './views/settings.js';
+import { openOnboarding, needsOnboarding } from './views/onboarding.js';
 
 function initRefraction() {
   // Преломление через SVG-фильтр в backdrop-filter стабильно работает только в Chromium.
@@ -33,6 +34,7 @@ function start() {
   nav = initNav(() => requestAnimationFrame(() => allSegs().forEach((s) => s.place())));
   bus.on('lang', () => nav.place());
   initSettings();
+  if (needsOnboarding()) openOnboarding();
 }
 
 start();

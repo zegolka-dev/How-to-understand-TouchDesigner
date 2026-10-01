@@ -64,7 +64,27 @@ html[data-theme="dark"] .btn--primary.btn--danger-fill { color: #1a0505; }
 .status--ok { color: var(--ok); }
 .status--err { color: var(--err); }
 .status--warn { color: var(--warn); }
-.status .icon { margin-top: 1px; }
+.status .icon { margin-top: 2px; }
+.spinner { flex: none; width: 16px; height: 16px; margin-top: 2px; border-radius: 50%; border: 2px solid var(--hairline); border-top-color: var(--accent); animation: spin .8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .spinner { animation: spin 1.6s linear infinite !important; animation-iteration-count: infinite !important; animation-duration: 1.6s !important; } }
+
+/* ---------- онбординг ---------- */
+.onb { display: grid; gap: var(--s4); }
+.onb__progress { display: flex; align-items: center; gap: var(--s3); }
+.onb__dots { display: flex; gap: 6px; }
+.onb__dot { width: 8px; height: 8px; border-radius: var(--r-pill); background: var(--hairline); transition: width var(--t-spring) var(--spring), background-color var(--t-med) ease; }
+.onb__dot[data-on="true"] { width: 24px; background: var(--accent); }
+.onb__dot[data-done="true"] { background: var(--accent-soft); }
+.onb__count { font-size: var(--fs-sm); color: var(--text-2); }
+.onb__hero { display: grid; place-items: center; width: 64px; height: 64px; border-radius: 20px; color: var(--on-accent); background: linear-gradient(135deg, var(--fam-top), var(--accent)); box-shadow: 0 10px 30px var(--accent-soft), inset 0 1px 0 rgba(255,255,255,.4); }
+.onb__hero .icon { width: 32px; height: 32px; }
+.onb__title { font-size: var(--fs-xl); outline: none; }
+.onb__steps { margin: 0; padding-left: 1.4em; display: grid; gap: 6px; }
+.onb__steps li::marker { color: var(--accent); font-weight: 600; }
+.onb__note { padding: var(--s3) var(--s4); border-radius: var(--r-field); background: var(--accent-soft); font-size: var(--fs-sm); }
+.onb .sheet__foot { justify-content: space-between; }
+.sheet__foot .spacer { flex: 1; }
 
 /* ---------- сегментированный контрол и навигация ---------- */
 .seg {
