@@ -7,7 +7,7 @@ import { segmented, setStatus, errorText } from './ui.js';
 import { loadVideo, extractFrames, makeThumbs } from '../video/extract.js';
 import { computeMetrics } from '../video/metrics.js';
 import { checkFile, checkDuration, estimateRequestBytes, estimateFromAvg, FRAMES, WARN_REQUEST } from '../video/limits.js';
-import { getActiveId, setActiveId, getFallbackId, getProvider, getModel, hasKey } from '../providers/registry.js';
+import { getActiveId, setActiveId, getFallbackId, getProvider, getModel, setModel, getAltModel, hasKey } from '../providers/registry.js';
 import { analyze } from '../ai/service.js';
 import { renderResult } from '../render/result.js';
 import { renderChat } from './chat.js';
@@ -209,10 +209,15 @@ function handleError(e, providerId) {
   const err = e instanceof AppError ? e : new AppError('network', { detail: e?.message });
   setStatus(el['run-status'], err.code === 'aborted' ? '' : 'err', errorText(err));
   const actions = [];
-  if (err.quota || err.code === 'region') {
+  if (['server', 'quota', 'notFoundModel', 'empty', 'timeout'].includes(err.code)) {
+    const alt = getAltModel(providerId);
+    if (alt) actions.push(h('button.btn.btn--primary.btn--sm', { type: 'button', on: { click: () => { setModel(providerId, alt); run(providerId); } } },
+      icon('refresh', 'icon--sm'), h('span', { text: t('analyze.tryModel', { model: alt }) })));
+  }
+  if (err.quota || err.code === 'region' || err.code === 'server') {
     const fb = getFallbackId(providerId);
     if (fb) {
-      actions.push(h('button.btn.btn--primary.btn--sm', { type: 'button', on: { click: () => { setActiveId(fb); run(fb); } } },
+      actions.push(h('button.btn.btn--secondary.btn--sm', { type: 'button', on: { click: () => { setActiveId(fb); run(fb); } } },
         icon('refresh', 'icon--sm'), h('span', { text: t('analyze.switchRetry', { provider: getProvider(fb).name }) })));
     } else {
       actions.push(h('button.btn.btn--secondary.btn--sm', { type: 'button', on: { click: () => openOnboarding() } }, icon('key', 'icon--sm'), h('span', { text: t('analyze.setupBackup') })));

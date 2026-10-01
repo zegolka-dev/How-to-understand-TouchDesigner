@@ -1,5 +1,5 @@
 // Google Gemini (generativelanguage.googleapis.com). Ключ только в заголовке x-goog-api-key.
-import { fetchJson, defaultMap } from './base.js';
+import { fetchJson, defaultMap, retryOnServer } from './base.js';
 import { AppError } from '../core/errors.js';
 
 const API = 'https://generativelanguage.googleapis.com/v1beta';
@@ -61,7 +61,7 @@ export function createGemini(getKey) {
     const body = { contents: toContents(messages), generationConfig };
     if (system) body.system_instruction = { parts: [{ text: system }] };
     const url = API + '/models/' + encodeURIComponent(model) + ':generateContent';
-    const call = (b) => fetchJson(url, { method: 'POST', headers: headers(true), body: JSON.stringify(b), timeout: 120000, signal, provider: 'gemini', mapStatus });
+    const call = (b) => retryOnServer(() => fetchJson(url, { method: 'POST', headers: headers(true), body: JSON.stringify(b), timeout: 120000, signal, provider: 'gemini', mapStatus }), { signal });
     let j;
     try {
       j = await call(body);

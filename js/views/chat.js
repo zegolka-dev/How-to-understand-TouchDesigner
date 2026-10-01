@@ -5,7 +5,7 @@ import { t, getLang } from '../core/i18n.js';
 import { renderMd } from '../render/markdown.js';
 import { setStatus, errorText } from './ui.js';
 import { followUp } from '../ai/service.js';
-import { getActiveId, setActiveId, getFallbackId, getProvider, hasKey } from '../providers/registry.js';
+import { getActiveId, setActiveId, getFallbackId, getProvider, hasKey, getAltModel, setModel } from '../providers/registry.js';
 
 /**
  * session: { record, history, live } — history: нейтральные сообщения до чата
@@ -56,8 +56,10 @@ export function renderChat(slot, session) {
       qEl?.remove();
       if (!retryText) input.value = q;
       setStatus(status, 'err', errorText(e));
-      const fb = e.quota ? getFallbackId(providerId) : null;
-      if (fb) actions.append(h('button.btn.btn--primary.btn--sm', { type: 'button', on: { click: () => { setActiveId(fb); input.value = ''; ask(fb, q); } } }, icon('refresh', 'icon--sm'), h('span', { text: t('analyze.switchRetry', { provider: getProvider(fb).name }) })));
+      const alt = ['server', 'quota', 'notFoundModel', 'empty', 'timeout'].includes(e.code) ? getAltModel(providerId) : null;
+      if (alt) actions.append(h('button.btn.btn--primary.btn--sm', { type: 'button', on: { click: () => { setModel(providerId, alt); input.value = ''; ask(providerId, q); } } }, icon('refresh', 'icon--sm'), h('span', { text: t('analyze.tryModel', { model: alt }) })));
+      const fb = e.quota || e.code === 'server' ? getFallbackId(providerId) : null;
+      if (fb) actions.append(h('button.btn.btn--secondary.btn--sm', { type: 'button', on: { click: () => { setActiveId(fb); input.value = ''; ask(fb, q); } } }, icon('refresh', 'icon--sm'), h('span', { text: t('analyze.switchRetry', { provider: getProvider(fb).name }) })));
     } finally { busy = false; send.disabled = false; }
   }
   send.addEventListener('click', () => ask());

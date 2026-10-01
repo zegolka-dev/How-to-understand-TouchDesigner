@@ -32,6 +32,15 @@ export function setModel(id, model) { ls.set(id + '.model', model); bus.emit('mo
 
 export const getCachedModels = (id) => ls.getJSON(id + '.models', []);
 
+/** Другая модель того же провайдера (следующая по списку) — для перегрузки/лимита конкретной модели. */
+export function getAltModel(id) {
+  const models = getCachedModels(id);
+  const cur = getModel(id);
+  const i = models.findIndex((m) => m.id === cur);
+  const rest = [...models.slice(i + 1), ...models.slice(0, Math.max(0, i))].filter((m) => m.id !== cur);
+  return rest[0]?.id || null;
+}
+
 /** Загружает список моделей, кэширует, выбирает дефолт если текущая пропала. */
 export async function refreshModels(id) {
   const p = getProvider(id);

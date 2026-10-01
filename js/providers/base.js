@@ -41,6 +41,16 @@ export async function fetchJson(url, { method = 'GET', headers = {}, body, timeo
   return json;
 }
 
+/** Один повтор при перегрузке сервера (503/500 — «high demand»), с паузой. */
+export async function retryOnServer(fn, { signal, delay = 2500 } = {}) {
+  try { return await fn(); } catch (e) {
+    if (e.code !== 'server' || signal?.aborted) throw e;
+    await new Promise((r) => setTimeout(r, delay));
+    if (signal?.aborted) throw e;
+    return fn();
+  }
+}
+
 export function defaultMap(status, detail, json, provider) {
   const info = { status, detail, provider };
   if (status === 401) return new AppError('badKey', info);

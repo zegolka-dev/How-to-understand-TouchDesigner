@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { mockNetwork, presetStorage, loadTestVideo, collectErrors, FAKE_GEMINI, FAKE_OR, geminiModels } from './helpers.mjs';
+import { mockNetwork, presetStorage, loadTestVideo, collectErrors, FAKE_GEMINI, FAKE_OR, geminiModels, geminiOk } from './helpers.mjs';
 
 test.describe('онбординг', () => {
   test.use({ locale: 'ru-RU' });
@@ -121,6 +121,27 @@ test.describe('ошибки API', () => {
       await expect(page.locator('#go')).toBeEnabled();
     });
   }
+
+  test('503 «high demand»: автоповтор, затем другая модель одним кликом', async ({ page }) => {
+    const hits = [];
+    await mockNetwork(page, {
+      gemini: (route, url) => {
+        hits.push(url.pathname);
+        if (url.pathname.includes('gemini-9.9-flash:')) return route.fulfill({ status: 503, json: { error: { code: 503, message: 'This model is currently experiencing high demand.', status: 'UNAVAILABLE' } } });
+        return route.fulfill({ json: geminiOk() });
+      },
+    });
+    const models = JSON.stringify(geminiModels.models.slice(0, 3).map((m) => ({ id: m.name.slice(7), label: m.name.slice(7) })));
+    await presetStorage(page, { 'gemini.models': models });
+    await page.goto('/index.html#analyze');
+    await loadTestVideo(page);
+    await page.click('#go');
+    await expect(page.locator('#run-status')).toContainText('перегружена', { timeout: 15000 });
+    expect(hits.filter((p) => p.includes('gemini-9.9-flash:')).length).toBe(2);
+    await page.getByRole('button', { name: 'Попробовать модель gemini-9.9-flash-lite' }).click();
+    await expect(page.locator('#result .g-node').first()).toBeVisible();
+    await expect(page.locator('#provider-line')).toContainText('gemini-9.9-flash-lite');
+  });
 
   test('429 → переключение на OpenRouter одним кликом', async ({ page }) => {
     const external = await mockNetwork(page, { gemini: (route) => route.fulfill({ status: 429, json: { error: { code: 429, message: 'quota', status: 'RESOURCE_EXHAUSTED' } } }) });

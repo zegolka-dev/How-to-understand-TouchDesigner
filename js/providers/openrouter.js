@@ -1,5 +1,5 @@
 // OpenRouter (openrouter.ai) — запасной провайдер, только бесплатные модели (:free) с поддержкой изображений.
-import { fetchJson, defaultMap } from './base.js';
+import { fetchJson, defaultMap, retryOnServer } from './base.js';
 import { AppError } from '../core/errors.js';
 
 const API = 'https://openrouter.ai/api/v1';
@@ -55,7 +55,7 @@ export function createOpenRouter(getKey) {
     if (!model) throw new AppError('notFoundModel', { provider: 'openrouter' });
     const body = { model, messages: toMessages(system, messages), temperature: 0.4, max_tokens: maxTokens };
     if (json) body.response_format = { type: 'json_object' };
-    const call = (b) => fetchJson(API + '/chat/completions', { method: 'POST', headers: headers(true), body: JSON.stringify(b), timeout: 150000, signal, provider: 'openrouter', mapStatus });
+    const call = (b) => retryOnServer(() => fetchJson(API + '/chat/completions', { method: 'POST', headers: headers(true), body: JSON.stringify(b), timeout: 150000, signal, provider: 'openrouter', mapStatus }), { signal });
     let j;
     try {
       j = await call(body);
