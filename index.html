@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="ru" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-1W7GmbVYXcbpp1LqhHEcE0T7XA7I130X/Twyr87kfzk='; style-src 'self'; img-src 'self' data: blob:; media-src blob:; font-src 'self'; connect-src https://generativelanguage.googleapis.com https://openrouter.ai; manifest-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta name="referrer" content="no-referrer">
+<meta name="color-scheme" content="light dark">
+<meta name="description" content="TD Explainer">
+<title>TD Explainer</title>
+<script>(function(){var d=document.documentElement,m='auto';try{m=localStorage.getItem('tdx.theme')||'auto'}catch(e){}var k=m==='dark'||(m!=='light'&&matchMedia('(prefers-color-scheme: dark)').matches);d.setAttribute('data-theme',k?'dark':'light');d.setAttribute('data-theme-mode',m)})();</script>
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="css/tokens.css">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/glass.css">
+<link rel="stylesheet" href="css/components.css">
+<script type="module" src="js/main.js"></script>
+</head>
+<body>
+<div class="bg" aria-hidden="true"><span class="blob blob--1"></span><span class="blob blob--2"></span><span class="blob blob--3"></span><span class="blob blob--4"></span></div>
+
+<svg width="0" height="0" class="sr-only" aria-hidden="true" focusable="false">
+  <defs>
+    <filter id="lg-refract" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB">
+      <feTurbulence type="fractalNoise" baseFrequency="0.008 0.012" numOctaves="1" seed="7" result="n"/>
+      <feDisplacementMap in="SourceGraphic" in2="n" scale="18" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+    <symbol id="i-logo" viewBox="0 0 24 24"><rect x="2" y="9" width="6" height="6" rx="1.5"/><rect x="16" y="3" width="6" height="6" rx="1.5"/><rect x="16" y="15" width="6" height="6" rx="1.5"/><path d="M8 12h4M12 12V6h4M12 12v6h4"/></symbol>
+    <symbol id="i-film" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M7.5 3v18M16.5 3v18M3 8h4.5M3 12h18M3 16h4.5M16.5 8H21M16.5 16H21"/></symbol>
+    <symbol id="i-upload" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/></symbol>
+    <symbol id="i-download" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></symbol>
+    <symbol id="i-sparkles" viewBox="0 0 24 24"><path d="M10 3l1.8 5.2L17 10l-5.2 1.8L10 17l-1.8-5.2L3 10l5.2-1.8zM19 14l.9 2.1L22 17l-2.1.9L19 20l-.9-2.1L16 17l2.1-.9z"/></symbol>
+    <symbol id="i-history" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 2.7-6.4L3 8M3 3v5h5M12 7v5l3.5 2"/></symbol>
+    <symbol id="i-settings" viewBox="0 0 24 24"><path d="M4 6h9M19 6h1M4 12h3M13 12h7M4 18h11M21 18h-1"/><circle cx="16" cy="6" r="2.5"/><circle cx="10" cy="12" r="2.5"/><circle cx="17.5" cy="18" r="2.5"/></symbol>
+    <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></symbol>
+    <symbol id="i-moon" viewBox="0 0 24 24"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9z"/></symbol>
+    <symbol id="i-auto" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 3v18" /><path d="M12 7h4M12 11h6M12 15h5" /></symbol>
+    <symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></symbol>
+    <symbol id="i-key" viewBox="0 0 24 24"><circle cx="7.5" cy="15.5" r="4.5"/><path d="M10.7 12.3 20 3M16 7l3 3M13.5 9.5l2 2"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></symbol>
+    <symbol id="i-copy" viewBox="0 0 24 24"><rect x="8" y="8" width="13" height="13" rx="2"/><path d="M4 16V5a2 2 0 0 1 2-2h11"/></symbol>
+    <symbol id="i-print" viewBox="0 0 24 24"><path d="M6 9V3h12v6"/><rect x="3" y="9" width="18" height="8" rx="2"/><path d="M6 14h12v7H6z"/></symbol>
+    <symbol id="i-trash" viewBox="0 0 24 24"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6M10 11v6M14 11v6"/></symbol>
+    <symbol id="i-chevron-left" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></symbol>
+    <symbol id="i-chevron-right" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></symbol>
+    <symbol id="i-external" viewBox="0 0 24 24"><path d="M15 3h6v6M10 14 21 3M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></symbol>
+    <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-2.6-6.4L21 8M21 3v5h-5"/></symbol>
+    <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 16v-5M12 8h.01"/></symbol>
+    <symbol id="i-alert" viewBox="0 0 24 24"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0zM12 9v4M12 17h.01"/></symbol>
+    <symbol id="i-send" viewBox="0 0 24 24"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4z"/></symbol>
+    <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></symbol>
+    <symbol id="i-eye-off" viewBox="0 0 24 24"><path d="M3 3l18 18M10.6 5.1A10 10 0 0 1 12 5c6.5 0 10 7 10 7a17 17 0 0 1-3.2 4.2M6.6 6.6A17 17 0 0 0 2 12s3.5 7 10 7a9.7 9.7 0 0 0 5.4-1.6M9.9 9.9a3 3 0 0 0 4.2 4.2"/></symbol>
+    <symbol id="i-chat" viewBox="0 0 24 24"><path d="M21 12a8 8 0 0 1-11.6 7.1L3 21l1.9-6.4A8 8 0 1 1 21 12z"/></symbol>
+    <symbol id="i-graph" viewBox="0 0 24 24"><rect x="2" y="9" width="6" height="6" rx="1.5"/><rect x="16" y="3" width="6" height="6" rx="1.5"/><rect x="16" y="15" width="6" height="6" rx="1.5"/><path d="M8 12h4M12 12V6h4M12 12v6h4"/></symbol>
+    <symbol id="i-image" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="9" cy="9" r="2"/><path d="m21 15-5-5L5 21"/></symbol>
+    <symbol id="i-doc" viewBox="0 0 24 24"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9zM14 3v6h6M8 13h8M8 17h5"/></symbol>
+  </defs>
+</svg>
+
+<a class="skip-link" href="#main" data-i18n="a11y.skip"></a>
+
+<header class="topbar">
+  <div class="brand">
+    <span class="brand__mark"><svg class="icon" aria-hidden="true"><use href="#i-logo"/></svg></span>
+    <span class="brand__name">TD Explainer</span>
+  </div>
+
+  <nav class="navpill seg glass glass--refract" role="tablist" data-i18n-attr="aria-label:nav.label" id="nav">
+    <span class="seg__thumb" aria-hidden="true"></span>
+    <button class="seg__opt" role="tab" id="tab-analyze" aria-controls="view-analyze" aria-selected="true" data-value="analyze"><svg class="icon" aria-hidden="true"><use href="#i-sparkles"/></svg><span data-i18n="nav.analyze"></span></button>
+    <button class="seg__opt" role="tab" id="tab-history" aria-controls="view-history" aria-selected="false" tabindex="-1" data-value="history"><svg class="icon" aria-hidden="true"><use href="#i-history"/></svg><span data-i18n="nav.history"></span></button>
+    <button class="seg__opt" role="tab" id="tab-settings" aria-controls="view-settings" aria-selected="false" tabindex="-1" data-value="settings"><svg class="icon" aria-hidden="true"><use href="#i-settings"/></svg><span data-i18n="nav.settings"></span></button>
+  </nav>
+
+  <div class="top-actions">
+    <div class="seg seg--icons glass" role="radiogroup" data-seg="theme" data-i18n-attr="aria-label:theme.label">
+      <span class="seg__thumb" aria-hidden="true"></span>
+      <button class="seg__opt" role="radio" data-value="auto" data-i18n-attr="aria-label:theme.auto;title:theme.auto"><svg class="icon" aria-hidden="true"><use href="#i-auto"/></svg></button>
+      <button class="seg__opt" role="radio" data-value="light" data-i18n-attr="aria-label:theme.light;title:theme.light"><svg class="icon" aria-hidden="true"><use href="#i-sun"/></svg></button>
+      <button class="seg__opt" role="radio" data-value="dark" data-i18n-attr="aria-label:theme.dark;title:theme.dark"><svg class="icon" aria-hidden="true"><use href="#i-moon"/></svg></button>
+    </div>
+    <div class="seg seg--icons glass" role="radiogroup" data-seg="lang" data-i18n-attr="aria-label:lang.label">
+      <span class="seg__thumb" aria-hidden="true"></span>
+      <button class="seg__opt" role="radio" data-value="ru" lang="ru" aria-label="Русский">RU</button>
+      <button class="seg__opt" role="radio" data-value="en" lang="en" aria-label="English">EN</button>
+    </div>
+  </div>
+</header>
+
+<main id="main" tabindex="-1">
+  <!-- ===================== РАЗБОР ===================== -->
+  <section class="view" id="view-analyze" role="tabpanel" aria-labelledby="tab-analyze">
+    <div class="view__head">
+      <h1 class="view__title" data-i18n="analyze.title"></h1>
+      <p class="view__lead" data-i18n="analyze.lead"></p>
+    </div>
+  </section>
+
+  <!-- ===================== ИСТОРИЯ ===================== -->
+  <section class="view" id="view-history" role="tabpanel" aria-labelledby="tab-history" hidden>
+    <div class="view__head">
+      <h1 class="view__title" data-i18n="history.title"></h1>
+      <p class="view__lead" data-i18n="history.lead"></p>
+    </div>
+  </section>
+
+  <!-- ===================== НАСТРОЙКИ ===================== -->
+  <section class="view" id="view-settings" role="tabpanel" aria-labelledby="tab-settings" hidden>
+    <div class="view__head">
+      <h1 class="view__title" data-i18n="settings.title"></h1>
+    </div>
+
+    <div class="card glass glass--dense">
+      <h2 class="card__title"><svg class="icon" aria-hidden="true"><use href="#i-sun"/></svg><span data-i18n="settings.appearance"></span></h2>
+      <div class="setting">
+        <span class="label" id="lbl-theme2" data-i18n="theme.label"></span>
+        <div class="seg glass-inset" role="radiogroup" data-seg="theme" aria-labelledby="lbl-theme2">
+          <span class="seg__thumb" aria-hidden="true"></span>
+          <button class="seg__opt" role="radio" data-value="auto"><svg class="icon icon--sm" aria-hidden="true"><use href="#i-auto"/></svg><span data-i18n="theme.auto"></span></button>
+          <button class="seg__opt" role="radio" data-value="light"><svg class="icon icon--sm" aria-hidden="true"><use href="#i-sun"/></svg><span data-i18n="theme.light"></span></button>
+          <button class="seg__opt" role="radio" data-value="dark"><svg class="icon icon--sm" aria-hidden="true"><use href="#i-moon"/></svg><span data-i18n="theme.dark"></span></button>
+        </div>
+      </div>
+      <div class="setting">
+        <span class="label" id="lbl-lang2" data-i18n="lang.label"></span>
+        <div class="seg glass-inset" role="radiogroup" data-seg="lang" aria-labelledby="lbl-lang2">
+          <span class="seg__thumb" aria-hidden="true"></span>
+          <button class="seg__opt" role="radio" data-value="ru" lang="ru">Русский</button>
+          <button class="seg__opt" role="radio" data-value="en" lang="en">English</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card glass glass--dense" id="providers-card">
+      <h2 class="card__title"><svg class="icon" aria-hidden="true"><use href="#i-key"/></svg><span data-i18n="settings.providers"></span></h2>
+      <p class="hint" data-i18n="settings.keyPrivacy"></p>
+
+      <div class="provider glass-inset" data-provider="gemini">
+        <div class="provider__head">
+          <span class="provider__name">Google Gemini <span class="badge" data-i18n="settings.main"></span></span>
+          <a class="btn btn--ghost btn--sm" href="https://aistudio.google.com/apikey" target="_blank" rel="noopener noreferrer"><span data-i18n="settings.getKey"></span><svg class="icon icon--sm" aria-hidden="true"><use href="#i-external"/></svg></a>
+        </div>
+        <div class="field">
+          <label class="label" for="key-gemini" data-i18n="settings.apiKey"></label>
+          <div class="input-group">
+            <input class="input" id="key-gemini" type="password" autocomplete="off" spellcheck="false" autocapitalize="off" data-key="gemini" placeholder="AIza…">
+            <button class="btn btn--secondary btn--icon" type="button" data-toggle-key="key-gemini" aria-pressed="false" data-i18n-attr="aria-label:settings.showKey;title:settings.showKey"><svg class="icon" aria-hidden="true"><use href="#i-eye"/></svg></button>
+          </div>
+        </div>
+        <div class="row">
+          <button class="btn btn--ghost btn--sm btn--danger" type="button" data-forget="gemini"><svg class="icon icon--sm" aria-hidden="true"><use href="#i-trash"/></svg><span data-i18n="settings.forgetKey"></span></button>
+        </div>
+      </div>
+
+      <div class="provider glass-inset" data-provider="openrouter">
+        <div class="provider__head">
+          <span class="provider__name">OpenRouter <span class="badge badge--muted" data-i18n="settings.backup"></span></span>
+          <a class="btn btn--ghost btn--sm" href="https://openrouter.ai/settings/keys" target="_blank" rel="noopener noreferrer"><span data-i18n="settings.getKey"></span><svg class="icon icon--sm" aria-hidden="true"><use href="#i-external"/></svg></a>
+        </div>
+        <div class="field">
+          <label class="label" for="key-openrouter" data-i18n="settings.apiKey"></label>
+          <div class="input-group">
+            <input class="input" id="key-openrouter" type="password" autocomplete="off" spellcheck="false" autocapitalize="off" data-key="openrouter" placeholder="sk-or-…">
+            <button class="btn btn--secondary btn--icon" type="button" data-toggle-key="key-openrouter" aria-pressed="false" data-i18n-attr="aria-label:settings.showKey;title:settings.showKey"><svg class="icon" aria-hidden="true"><use href="#i-eye"/></svg></button>
+          </div>
+        </div>
+        <div class="row">
+          <button class="btn btn--ghost btn--sm btn--danger" type="button" data-forget="openrouter"><svg class="icon icon--sm" aria-hidden="true"><use href="#i-trash"/></svg><span data-i18n="settings.forgetKey"></span></button>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<div class="toasts" id="toasts" role="status" aria-live="polite"></div>
+</body>
+</html>

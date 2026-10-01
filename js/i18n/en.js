@@ -1,0 +1,47 @@
+export default {
+  'app.docTitle': 'TD Explainer — break down TouchDesigner videos',
+  'app.tagline': 'Upload a TouchDesigner video and get a step-by-step guide: which nodes to use, how to wire them and what values to set.',
+  'a11y.skip': 'Skip to content',
+
+  'common.close': 'Close',
+  'common.ok': 'OK',
+  'common.cancel': 'Cancel',
+  'common.back': 'Back',
+  'common.next': 'Next',
+  'common.done': 'Done',
+  'common.retry': 'Retry',
+  'common.copied': 'Copied',
+
+  'nav.label': 'Sections',
+  'nav.analyze': 'Analyze',
+  'nav.history': 'History',
+  'nav.settings': 'Settings',
+
+  'theme.label': 'Theme',
+  'theme.auto': 'Auto',
+  'theme.light': 'Light',
+  'theme.dark': 'Dark',
+  'lang.label': 'Language',
+
+  'analyze.title': 'Video breakdown',
+  'analyze.lead': 'Upload a TouchDesigner video and the app will tell you which nodes to use, how to wire them and what values to set. The video never leaves your browser.',
+
+  'history.title': 'History',
+  'history.lead': 'Saved breakdowns are stored only in this browser.',
+
+  'settings.title': 'Settings',
+  'settings.appearance': 'Appearance',
+  'settings.providers': 'AI keys',
+  'settings.keyPrivacy': 'Keys are stored only in this browser and sent directly to Google or OpenRouter. They go nowhere else.',
+  'settings.main': 'main',
+  'settings.backup': 'backup',
+  'settings.getKey': 'Get a key',
+  'settings.apiKey': 'API key',
+  'settings.showKey': 'Show key',
+  'settings.hideKey': 'Hide key',
+  'settings.forgetKey': 'Forget key',
+  'settings.forgetTitle': 'Forget the key?',
+  'settings.forgetText': 'The key will be removed from this browser. You will need to paste it again to keep using the app.',
+  'settings.keyForgotten': 'Key removed from the browser.',
+  'settings.noKeyToForget': 'No key is saved.',
+};

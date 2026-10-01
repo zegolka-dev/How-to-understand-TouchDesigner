@@ -1,0 +1,116 @@
+/* Дизайн-токены Liquid Glass. Светлая тема по умолчанию, тёмная через html[data-theme="dark"]. */
+:root {
+  color-scheme: light;
+
+  /* типографика */
+  --font: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Segoe UI Variable", "Segoe UI", system-ui, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", "Cascadia Code", Consolas, monospace;
+  --fs-xs: 12px; --fs-sm: 14px; --fs-md: 16px; --fs-lg: 18px; --fs-xl: 22px; --fs-2xl: 28px; --fs-3xl: 34px;
+  --lh: 1.5; --lh-tight: 1.2;
+
+  /* отступы и радиусы */
+  --s1: 4px; --s2: 8px; --s3: 12px; --s4: 16px; --s5: 24px; --s6: 32px; --s7: 48px;
+  --r-card: 26px; --r-sheet: 32px; --r-field: 14px; --r-sm: 10px; --r-pill: 999px;
+  --tap: 44px;
+
+  /* движение */
+  --spring: cubic-bezier(.34, 1.56, .64, 1);
+  --ease-out: cubic-bezier(.22, 1, .36, 1);
+  --t-fast: 160ms; --t-med: 280ms; --t-spring: 420ms; --t-theme: 300ms;
+
+  /* фон */
+  --bg: #eef1f8;
+  --blob-1: #8ec5ff; --blob-2: #c7a6ff; --blob-3: #ffb8d9; --blob-4: #9bf0e1;
+  --blob-opacity: .85;
+
+  /* стекло */
+  --glass-fill: rgba(255, 255, 255, .45);
+  --glass-fill-hover: rgba(255, 255, 255, .58);
+  --glass-fill-dense: rgba(255, 255, 255, .80);
+  --glass-fill-solid: rgba(250, 251, 254, .96);
+  --glass-fill-inset: rgba(255, 255, 255, .55);
+  --glass-blur: blur(24px) saturate(170%);
+  --edge-hi: rgba(255, 255, 255, .95);
+  --edge-lo: rgba(255, 255, 255, .22);
+  --edge-hi2: rgba(255, 255, 255, .55);
+  --spec: rgba(255, 255, 255, .75);
+  --glass-shadow: 0 8px 32px rgba(31, 38, 80, .12), 0 1px 2px rgba(31, 38, 80, .06), inset 0 1px 0 rgba(255, 255, 255, .7);
+  --glass-shadow-lg: 0 24px 64px rgba(31, 38, 80, .22), inset 0 1px 0 rgba(255, 255, 255, .7);
+  --hairline: rgba(20, 24, 40, .12);
+
+  /* текст и семантика */
+  --text: #0b0d14;
+  --text-2: #3c4254;
+  --text-3: #5a6175;
+  --accent: #3b5bff;
+  --accent-fill: rgba(59, 91, 255, .88);
+  --accent-soft: rgba(59, 91, 255, .14);
+  --on-accent: #ffffff;
+  --ok: #0f7b4e; --ok-soft: rgba(15, 123, 78, .12);
+  --warn: #8a5a00; --warn-soft: rgba(176, 116, 0, .14);
+  --err: #c62828; --err-soft: rgba(198, 40, 40, .12);
+  --focus: #3b5bff;
+  --focus-halo: rgba(255, 255, 255, .9);
+  --code-bg: rgba(20, 24, 40, .06);
+
+  /* семейства операторов TouchDesigner */
+  --fam-top: #7b4fd6; --fam-chop: #2e9e4f; --fam-sop: #2f6fd8;
+  --fam-dat: #c04ca8; --fam-comp: #5b6b80; --fam-mat: #c98a12;
+}
+
+html[data-theme="dark"] {
+  color-scheme: dark;
+
+  --bg: #07080d;
+  --blob-1: #3a2bff; --blob-2: #9b2cff; --blob-3: #0094ff; --blob-4: #00c2a8;
+  --blob-opacity: .55;
+
+  --glass-fill: rgba(255, 255, 255, .08);
+  --glass-fill-hover: rgba(255, 255, 255, .13);
+  --glass-fill-dense: rgba(20, 22, 32, .80);
+  --glass-fill-solid: rgba(18, 20, 28, .97);
+  --glass-fill-inset: rgba(255, 255, 255, .06);
+  --glass-blur: blur(28px) saturate(160%);
+  --edge-hi: rgba(255, 255, 255, .32);
+  --edge-lo: rgba(255, 255, 255, .05);
+  --edge-hi2: rgba(255, 255, 255, .14);
+  --spec: rgba(255, 255, 255, .14);
+  --glass-shadow: 0 10px 40px rgba(0, 0, 0, .45), 0 1px 2px rgba(0, 0, 0, .3), inset 0 1px 0 rgba(255, 255, 255, .12);
+  --glass-shadow-lg: 0 30px 80px rgba(0, 0, 0, .6), inset 0 1px 0 rgba(255, 255, 255, .12);
+  --hairline: rgba(255, 255, 255, .12);
+
+  --text: #f4f6fb;
+  --text-2: #c3c8d6;
+  --text-3: #a3aabb;
+  --accent: #8796ff;
+  --accent-fill: rgba(124, 140, 255, .9);
+  --accent-soft: rgba(135, 150, 255, .18);
+  --on-accent: #0b0d14;
+  --ok: #46d693; --ok-soft: rgba(70, 214, 147, .14);
+  --warn: #ffc56b; --warn-soft: rgba(255, 197, 107, .14);
+  --err: #ff7a7a; --err-soft: rgba(255, 122, 122, .14);
+  --focus: #9aa8ff;
+  --focus-halo: rgba(7, 8, 13, .9);
+  --code-bg: rgba(255, 255, 255, .07);
+
+  --fam-top: #a383ff; --fam-chop: #5fd17f; --fam-sop: #6ea0ff;
+  --fam-dat: #e47ccc; --fam-comp: #95a5ba; --fam-mat: #f0b443;
+}
+
+/* Без backdrop-filter стекло становится почти непрозрачным */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  :root, html[data-theme="dark"] { --glass-fill: var(--glass-fill-solid); --glass-fill-hover: var(--glass-fill-solid); --glass-fill-dense: var(--glass-fill-solid); }
+}
+/* Тот же fallback принудительно (для тестов и слабых устройств) */
+html.no-glass { --glass-fill: var(--glass-fill-solid); --glass-fill-hover: var(--glass-fill-solid); --glass-fill-dense: var(--glass-fill-solid); }
+
+@media (prefers-reduced-transparency: reduce) {
+  :root, html[data-theme="dark"] { --glass-fill: var(--glass-fill-solid); --glass-fill-hover: var(--glass-fill-solid); --glass-fill-dense: var(--glass-fill-solid); --spec: transparent; }
+}
+@media (prefers-contrast: more) {
+  :root, html[data-theme="dark"] {
+    --glass-fill: var(--glass-fill-solid); --glass-fill-hover: var(--glass-fill-solid); --glass-fill-dense: var(--glass-fill-solid);
+    --spec: transparent; --edge-hi: var(--text-2); --edge-lo: var(--text-2); --edge-hi2: var(--text-2);
+    --hairline: var(--text-2); --text-2: var(--text); --text-3: var(--text);
+  }
+}

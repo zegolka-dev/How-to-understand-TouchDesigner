@@ -1,0 +1,63 @@
+/* Материал Liquid Glass. Не вкладывать .glass с blur больше чем на 2 уровня:
+   внутри карточек используйте .glass-inset (без backdrop-filter). */
+.glass {
+  position: relative; isolation: isolate;
+  background: var(--glass-fill);
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
+  border-radius: var(--r-card);
+  box-shadow: var(--glass-shadow);
+  transition: background-color var(--t-theme) ease, box-shadow var(--t-theme) ease, transform var(--t-spring) var(--spring);
+}
+/* градиентная кромка: ярче сверху-слева */
+.glass::before, .glass-inset::before {
+  content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+  border-radius: inherit; padding: 1px;
+  background: linear-gradient(140deg, var(--edge-hi) 0%, var(--edge-lo) 38%, var(--edge-lo) 64%, var(--edge-hi2) 100%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask-composite: exclude;
+}
+/* specular highlight */
+.glass::after {
+  content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+  border-radius: inherit;
+  background: radial-gradient(120% 70% at 12% 0%, var(--spec) 0%, transparent 52%);
+  opacity: .8;
+  transition: opacity var(--t-med) ease;
+}
+.glass--dense { background: var(--glass-fill-dense); }
+.glass--dense::after { opacity: .35; }
+.glass--clear { background: transparent; box-shadow: none; }
+
+/* стекло внутри стекла: без размытия */
+.glass-inset {
+  position: relative; isolation: isolate;
+  background: var(--glass-fill-inset);
+  border-radius: var(--r-field);
+}
+
+/* интерактивный отклик */
+.glass--interactive { cursor: pointer; }
+@media (hover: hover) {
+  .glass--interactive:hover { background: var(--glass-fill-hover); transform: scale(1.015); }
+  .glass--interactive:hover::after { opacity: 1; }
+}
+.glass--interactive:active { transform: scale(.97); transition-duration: var(--t-fast); }
+
+/* Chromium: лёгкое преломление у краёв крупных элементов (включается классом html.refract из JS) */
+html.refract .glass--refract {
+  -webkit-backdrop-filter: url(#lg-refract) var(--glass-blur);
+  backdrop-filter: url(#lg-refract) var(--glass-blur);
+}
+
+@media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
+  .glass, html.refract .glass--refract { -webkit-backdrop-filter: none; backdrop-filter: none; }
+  .glass::after { display: none; }
+}
+html.no-glass .glass, html.no-glass .glass--refract { -webkit-backdrop-filter: none !important; backdrop-filter: none !important; }
+@media (forced-colors: active) {
+  .glass, .glass-inset { border: 1px solid CanvasText; }
+  .glass::before, .glass::after, .glass-inset::before { display: none; }
+}

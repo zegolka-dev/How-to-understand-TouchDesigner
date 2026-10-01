@@ -1,0 +1,47 @@
+export default {
+  'app.docTitle': 'TD Explainer — разбор видео из TouchDesigner',
+  'app.tagline': 'Загрузите видео из TouchDesigner и получите пошаговую инструкцию: какие ноды взять, как соединить и какие значения поставить.',
+  'a11y.skip': 'Перейти к содержимому',
+
+  'common.close': 'Закрыть',
+  'common.ok': 'ОК',
+  'common.cancel': 'Отмена',
+  'common.back': 'Назад',
+  'common.next': 'Далее',
+  'common.done': 'Готово',
+  'common.retry': 'Повторить',
+  'common.copied': 'Скопировано',
+
+  'nav.label': 'Разделы',
+  'nav.analyze': 'Разбор',
+  'nav.history': 'История',
+  'nav.settings': 'Настройки',
+
+  'theme.label': 'Тема',
+  'theme.auto': 'Авто',
+  'theme.light': 'Светлая',
+  'theme.dark': 'Тёмная',
+  'lang.label': 'Язык',
+
+  'analyze.title': 'Разбор видео',
+  'analyze.lead': 'Загрузите видео из TouchDesigner — приложение подскажет, какие ноды взять, как их соединить и какие значения поставить. Видео не покидает ваш браузер.',
+
+  'history.title': 'История',
+  'history.lead': 'Сохранённые разборы хранятся только в этом браузере.',
+
+  'settings.title': 'Настройки',
+  'settings.appearance': 'Оформление',
+  'settings.providers': 'Ключи нейросетей',
+  'settings.keyPrivacy': 'Ключи хранятся только в этом браузере и отправляются напрямую в Google или OpenRouter. Никуда больше они не уходят.',
+  'settings.main': 'основной',
+  'settings.backup': 'запасной',
+  'settings.getKey': 'Получить ключ',
+  'settings.apiKey': 'API-ключ',
+  'settings.showKey': 'Показать ключ',
+  'settings.hideKey': 'Скрыть ключ',
+  'settings.forgetKey': 'Забыть ключ',
+  'settings.forgetTitle': 'Забыть ключ?',
+  'settings.forgetText': 'Ключ будет удалён из этого браузера. Чтобы снова пользоваться приложением, его нужно будет вставить заново.',
+  'settings.keyForgotten': 'Ключ удалён из браузера.',
+  'settings.noKeyToForget': 'Ключ не сохранён.',
+};
