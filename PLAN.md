@@ -8,7 +8,7 @@
 - [x] **Этап 3 (в).** Анализ видео и вызов модели со структурированным JSON
 - [x] **Этап 4 (г).** Результат, SVG-схема, экспорт
 - [x] **Этап 5 (д).** История и уточняющие вопросы
-- [ ] **Этап 6 (е).** Тесты, README, деплой
+- [x] **Этап 6 (е).** Тесты, README, деплой
 
 Источник требований: `docs/TZ.md/TZ.md.txt`. Эталон: `prototype/td-explainer.html` (не менять).
 
@@ -302,3 +302,5 @@ manifest-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'
 - Этап 3: готово. video/{extract,metrics,limits}, ai/{prompt,schema,parse,service}, views/analyze.js, render/markdown.js. render/result.js — пока заглушка (JSON), заменить в этапе 4. Проверено в браузере: webm из canvas+MediaRecorder → 12 кадров, метрики, мок Gemini (успех, 429 → «переключиться на OpenRouter»). `node tools/parse-check.mjs` — фикстуры битого JSON.
 - Этап 4: готово. render/{graph,result,export}.js, css/{result,print}.css. Граф: слои + барицентры, feedback-рёбра — пунктирная дуга снизу. Экспорт MD/копирование/печать/SVG/PNG. Тесты Playwright уже начаты (tests/e2e/result.spec.mjs, screens.spec.mjs — 7 зелёных). Тестовое видео: ffmpeg из PATH (`npm run fixtures`), иначе webm генерируется в браузере.
 - Этап 5: готово. history/db.js (IndexedDB, clean() валидирует импорт: только data:image миниатюры, hex-палитра), views/history.js, views/chat.js. Изменения записи (шаги, чат) сохраняются сразу через очередь. Тест tests/e2e/history.spec.mjs. Всего 8 тестов зелёные.
+- Этап 6: готово. tests/e2e/app.spec.mjs (онбординг, язык/тема, отсутствие мигания, авто-тема, ошибки 400/403/404/429, переключение на OpenRouter, fallback без backdrop-filter, контраст токенов ≥4.5). Всего 19 тестов: `npm test`. README RU/EN, workflows deploy.yml (Pages через Actions) и test.yml. dev слит в main.
+- Осталось (вне ТЗ / проверить вручную): реальный разбор с настоящим ключом Gemini (у меня ключа нет — всё проверено моками и живыми запросами с фейковым ключом); включить Pages в настройках репозитория после пуша.
