@@ -40,6 +40,7 @@ export const ANALYSIS = {
   postfx: ['Level TOP: лёгкое затухание'],
   tweakNotes: ['Opacity шлейфа'],
   uncertainties: ['Точный цвет фона'],
+  tutorialQueries: ['touchdesigner feedback loop tutorial', 'touchdesigner transform top animation'],
   confidence: 0.72,
 };
 

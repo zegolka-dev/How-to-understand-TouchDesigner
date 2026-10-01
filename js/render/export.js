@@ -58,7 +58,7 @@ export function toMarkdown(record) {
       });
       if (r.connections.length) {
         L.push('', '```');
-        r.connections.forEach((c) => L.push(`${c.from} -> ${c.to} [${t('result.input')} ${c.inputIndex}]${c.uncertain ? ' ?' : ''}`));
+        r.connections.forEach((c) => L.push(c.kind === 'reference' ? `${c.from} ~> ${c.to} (${t('result.refLink')})` : `${c.from} -> ${c.to} [${t('result.input')} ${c.inputIndex}]${c.uncertain ? ' ?' : ''}`));
         L.push('```');
       }
       L.push('');
@@ -77,6 +77,7 @@ export function toMarkdown(record) {
     list('result.postfx', r.postfx);
     list('result.tweak', r.tweakNotes);
     list('result.uncertain', r.uncertainties);
+    if (r.tutorialQueries?.length) { L.push(`## ${t('result.learn')}`); r.tutorialQueries.forEach((q) => L.push(`- [${q}](https://www.youtube.com/results?search_query=${encodeURIComponent(q)})`)); L.push(''); }
     L.push(`_≈ — ${t('result.approx')}_`);
   }
   if (record.chat?.length) {

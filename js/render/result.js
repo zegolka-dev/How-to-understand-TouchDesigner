@@ -102,6 +102,9 @@ export function renderResult(root, record) {
       label: t('result.graphLabel', { n: r.nodes.length }),
       nodeLabel: (n) => `${n.type} ${n.id}`,
       onSelect: selectNode,
+      stepOf: (id) => r.steps.find((s) => s.nodeIds.includes(id))?.n,
+      refLabel: t('result.refLink'),
+      inputLabel: t('result.input'),
     });
     graphWrap.append(graph.svg);
     const bg = () => getComputedStyle(document.documentElement).getPropertyValue('--graph-export-bg').trim() || '#ffffff';
@@ -116,6 +119,8 @@ export function renderResult(root, record) {
   }
   const legend = h('ul.legend', { 'aria-label': t('result.legend') },
     FAM_KEYS.filter((f) => r.nodes.some((n) => n.family === f)).map((f) => h('li', { 'data-fam': f }, h('span.legend__dot', { 'aria-hidden': 'true' }), h('span', { text: f }))),
+    h('li', {}, h('span.legend__line.legend__line--wire', { 'aria-hidden': 'true' }), h('span', { text: t('result.wireLink') })),
+    r.connections.some((c) => c.kind === 'reference') ? h('li', {}, h('span.legend__line.legend__line--ref', { 'aria-hidden': 'true' }), h('span', { text: t('result.refLink') })) : null,
     r.connections.some((c) => c.uncertain) ? h('li.legend__dash', {}, h('span.legend__line', { 'aria-hidden': 'true' }), h('span', { text: t('result.uncertainLink') })) : null);
   const unlinked = r.nodes.filter((n) => !r.steps.some((s) => s.nodeIds.includes(n.id)));
   root.append(section('res-graph', 'graph', 'result.graph',
@@ -157,6 +162,13 @@ export function renderResult(root, record) {
   root.append(section('res-tweak', 'settings', 'result.tweak', list(r.tweakNotes),
     r.uncertainties.length ? [h('h3.res-sub', { text: t('result.uncertain') }), list(r.uncertainties, false)] : null,
     h('p.hint', {}, h('span.approx', { 'aria-hidden': 'true', text: '≈' }), ' ' + t('result.approx'))));
+
+  /* 8. Уроки по теме: только поисковые ссылки YouTube, без выдуманных видео */
+  const queries = r.tutorialQueries?.length ? r.tutorialQueries : r.techniques.slice(0, 3).map((x) => 'touchdesigner ' + x.name + ' tutorial');
+  if (queries.length) {
+    const link = (q) => h('a.btn.btn--secondary.btn--sm', { href: 'https://www.youtube.com/results?search_query=' + encodeURIComponent(q), target: '_blank', rel: 'noopener noreferrer' }, h('span', { text: q }), icon('external', 'icon--sm'));
+    root.append(section('res-learn', 'film', 'result.learn', h('p.hint', { text: t('result.learnHint') }), h('div.tutorials', {}, queries.map(link))));
+  }
 
   return finish(root);
 }

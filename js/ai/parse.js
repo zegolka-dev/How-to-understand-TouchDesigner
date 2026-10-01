@@ -114,12 +114,16 @@ export function normalize(o) {
     to: idMap.get(str(c.to)) || idMap.get(slug(c.to)),
     inputIndex: Math.max(0, Math.min(15, parseInt(c.inputIndex, 10) || 0)),
     uncertain: bool(c.uncertain),
+    kind: str(c.kind) === 'reference' ? 'reference' : 'wire',
   })).filter((c) => {
     if (!c.from || !c.to || c.from === c.to) return false;
     const key = c.from + '>' + c.to + '#' + c.inputIndex;
     if (seen.has(key)) return false;
     seen.add(key); return true;
   });
+  // провод между разными семействами в TouchDesigner невозможен — это ссылка/экспорт
+  const famOf = new Map(nodes.map((n) => [n.id, n.family]));
+  for (const c of connections) if (c.kind === 'wire' && famOf.get(c.from) !== famOf.get(c.to) && famOf.get(c.to) !== 'COMP') c.kind = 'reference';
   const steps = arr(o.steps).filter((s) => s && typeof s === 'object' || typeof s === 'string').map((s, i) => (typeof s === 'string'
     ? { n: i + 1, title: s.slice(0, 120), nodeIds: [], details: s }
     : {
@@ -141,6 +145,7 @@ export function normalize(o) {
     postfx: strArr(o.postfx),
     tweakNotes: strArr(o.tweakNotes),
     uncertainties: strArr(o.uncertainties),
+    tutorialQueries: strArr(o.tutorialQueries).map((q) => q.slice(0, 100)).slice(0, 4),
     confidence: Math.max(0, Math.min(1, confidence)),
   };
 }

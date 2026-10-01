@@ -12,9 +12,13 @@ const NAMING = `NAMING RULES
 - Parameter names must be the labels shown in the parameter dialog (e.g. Type, Seed, Period, Harmonics, Amplitude, Offset, Translate, Rotate, Scale, Resolution, Opacity, Operation, Pre-Fit Overlay, Target TOP, Displace Weight, Brightness, Gamma, Contrast, Black Level, Filter Size, Extend Mode, Instancing, Translate X/Y/Z OP). If unsure of the exact label, use the closest well-known label and set "approximate": true.
 - Node ids follow TouchDesigner's default naming: noise1, feedback1, comp1, level1, geo1, render1, cam1, lfo1, null1, out1.
 - connections: "from" output goes into input "inputIndex" (0-based) of "to". For Composite/Over/Multiply TOPs, input 0 is the top/foreground layer according to TouchDesigner's input order — state the order explicitly in step details.
-- Feedback loops: Feedback TOP takes the chain's result through its "Target TOP" parameter; draw the reference as a connection from the target node to the Feedback TOP with "uncertain": false and explain it.`;
+- Every connection has "kind":
+  * "wire" = a real wire you drag in the network editor from the output of one operator into an input of another. Wires only connect operators of the SAME family (TOP→TOP, CHOP→CHOP, SOP→SOP). Use converter operators (CHOP to TOP, TOP to CHOP, SOP to CHOP…) if the data really must change family.
+  * "reference" = NOT a wire: a parameter that points to another operator (Feedback TOP "Target TOP", Geometry COMP "Instance OP", Render TOP "Camera"/"Geometry", Displace TOP is a wire though) or a CHOP channel exported/referenced into a parameter (Lfo CHOP → Transform TOP "Rotate" via expression op('lfo1')['chan1'] or a CHOP export). For references, explain in the step which parameter and what to type.
+  * Never draw a wire between different families — that is always a "reference".
+- Feedback loops: the chain's result reaches Feedback TOP through its "Target TOP" parameter: add it as a "reference" connection from the target node to the Feedback TOP.`;
 
-const RECIPES = `RECIPE CHEAT SHEET (visual cue on frames → typical network)
+const RECIPES = `RECIPE CHEAT SHEET (visual cue on frames → typical network). These are the short networks taught in popular TouchDesigner tutorials; start from the closest one and add only what an observation requires.
 1. Feedback trails / echoes / smeared motion / "infinite" zoom tunnels → source → Composite TOP (Operation Add/Over) ← Feedback TOP (Target TOP = the composite or a Level TOP after it) → Transform TOP (slight Scale 1.01–1.05 or Rotate) → Level TOP (Opacity 0.9–0.98 to fade) → back to Composite. Long fading tails = high feedback opacity.
 2. Wavy, liquid, flowing distortion that follows a smooth pattern → Noise TOP (low Period, animated Translate Z via absTime.seconds) → Displace TOP input 1 (displacement map), image in input 0; Displace Weight ≈ 0.05–0.3.
 3. Many identical objects in a grid/cloud/ring, moving in sync → Geometry COMP with Instancing on, instance data from a SOP (Grid SOP/Sphere SOP points) or CHOP (Noise CHOP channels tx ty tz), Camera COMP + Light COMP → Render TOP.
@@ -35,7 +39,8 @@ const METRICS = `HOW TO USE THE METRICS
 const METHOD = `METHOD (follow in this order; the JSON field order mirrors it)
 1. "observations": first list 5-10 concrete things you actually see across the frames: 2D or 3D, shapes and their count, colors and gradients, how things move between frames, trails/smearing, symmetry or repetition, distortion, grain/noise, glow, edges, camera motion, text, background.
 2. Match each observation to the recipe cheat sheet and pick the simplest network that reproduces ALL of them together.
-3. Then write nodes, connections and steps so that a person following them gets a result that clearly resembles the video. Prefer one concrete, buildable network with real starting values over vague lists of possibilities; put alternatives only into "uncertainties".`;
+3. MINIMAL NETWORK: every node must be justified by at least one observation (say which in "purpose"). Do not add nodes "just in case", for polish nobody can see, or Null/Out operators except one final Out/Null if useful. If one operator can do the job (e.g. Transform TOP instead of Transform + Level + Composite), use one. Size limit depends on the user level (see USER LEVEL).
+4. Then write nodes, connections and steps so that a person following them gets a result that clearly resembles the video. Prefer one concrete, buildable network with real starting values over vague lists of possibilities; put alternatives only into "uncertainties".`;
 
 const HONESTY = `RULES AGAINST MAKING THINGS UP
 - Describe only what is visible or strongly implied. When a technique cannot be identified with confidence, write "probably"/"possibly" (in the answer language), give 1–2 alternatives, and add an entry to "uncertainties".
@@ -43,12 +48,12 @@ const HONESTY = `RULES AGAINST MAKING THINGS UP
 - If the video does not look like TouchDesigner (e.g. live footage, After Effects, Blender, game capture), set "isLikelyTouchDesigner": false and explain in "summary" how one could still approximate it in TouchDesigner.
 - "confidence" is your honest overall confidence 0..1 that following the steps reproduces the look. Calibrate it: 0.85-0.95 = a classic recipe is clearly visible (feedback trails, noise displace, instancing grid, kaleidoscope); 0.6-0.8 = the core technique is clear, some parameters or details are guessed; 0.35-0.55 = two or more quite different approaches are equally plausible; below 0.3 = you cannot tell. Do not lower it just because exact numeric values are unknown: approximate values are expected and marked separately.
 - Explain working expressions literally (absTime.seconds*0.2, me.time.frame, op('lfo1')['chan1'], math.sin(absTime.seconds)), and where to type them (click the parameter, switch to expression mode).
-- Keep it lean: 4–12 nodes, at most 10 steps, no filler, no generic TouchDesigner tutorial text — only what is needed to rebuild this look.`;
+- Keep it lean: at most 8 steps, no filler, no generic TouchDesigner tutorial text — only what is needed to rebuild this look.`;
 
 const LEVELS = {
-  beginner: 'USER LEVEL: beginner. In each step say how to create the operator (press Tab, type the name, click to place), where the parameter is (which page of the parameter dialog), and briefly what TOP/CHOP/SOP mean when they first appear. Avoid GLSL unless unavoidable.',
-  mid: 'USER LEVEL: intermediate. Be precise and compact; skip basics like how to create an operator.',
-  pro: 'USER LEVEL: advanced. Be dense. Prefer efficient networks, expressions, Python and GLSL where they are the natural tool; mention performance tips (resolution, pixel format, Cache TOP) when relevant.',
+  beginner: 'USER LEVEL: beginner. Network size: 3–6 nodes, the simplest version that already looks like the video; mention possible extras only in tweakNotes. In each step say how to create the operator (press Tab, type the name, click to place), where the parameter is (which page of the parameter dialog), and briefly what TOP/CHOP/SOP mean when they first appear. Avoid GLSL unless unavoidable.',
+  mid: 'USER LEVEL: intermediate. Network size: 4–9 nodes. Be precise and compact; skip basics like how to create an operator.',
+  pro: 'USER LEVEL: advanced. Network size: up to 12 nodes when really needed. Be dense. Prefer efficient networks, expressions, Python and GLSL where they are the natural tool; mention performance tips (resolution, pixel format, Cache TOP) when relevant.',
 };
 
 export function buildSystem({ lang = 'en', level = 'mid' } = {}) {
@@ -57,7 +62,7 @@ export function buildSystem({ lang = 'en', level = 'mid' } = {}) {
     ROLE, NAMING, RECIPES, METRICS, METHOD, HONESTY,
     LEVELS[level] || LEVELS.mid,
     `OUTPUT FORMAT\nReturn ONLY one JSON object (no Markdown, no code fences, no commentary) with this shape:\n${SCHEMA_DESCRIPTION}`,
-    `LANGUAGE: write every human-readable string (summary, observations, why, purpose, titles, details, animation, postfx, tweakNotes, uncertainties) in ${L}. Keep operator names, parameter labels, node ids and expressions in English exactly as in TouchDesigner.`,
+    `TUTORIALS: "tutorialQueries" = 2–4 short English YouTube search phrases that would find tutorials teaching these exact techniques (e.g. "touchdesigner feedback loop tutorial", "touchdesigner instancing tutorial"); no URLs, no invented video titles.\n\nLANGUAGE NOTE: write every human-readable string (summary, observations, why, purpose, titles, details, animation, postfx, tweakNotes, uncertainties) in ${L}. Keep operator names, parameter labels, node ids and expressions in English exactly as in TouchDesigner.`,
   ].join('\n\n');
 }
 

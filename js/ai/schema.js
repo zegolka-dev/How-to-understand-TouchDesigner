@@ -26,16 +26,17 @@ export const RESPONSE_SCHEMA = {
         propertyOrdering: ['id', 'type', 'family', 'params', 'purpose'],
       },
     },
-    connections: { type: 'ARRAY', items: { type: 'OBJECT', properties: { from: S, to: S, inputIndex: I, uncertain: B }, required: ['from', 'to', 'inputIndex'], propertyOrdering: ['from', 'to', 'inputIndex', 'uncertain'] } },
+    connections: { type: 'ARRAY', items: { type: 'OBJECT', properties: { from: S, to: S, kind: { type: 'STRING', enum: ['wire', 'reference'] }, inputIndex: I, uncertain: B }, required: ['from', 'to', 'kind', 'inputIndex'], propertyOrdering: ['from', 'to', 'kind', 'inputIndex', 'uncertain'] } },
     steps: { type: 'ARRAY', items: { type: 'OBJECT', properties: { n: I, title: S, nodeIds: STR_ARR, details: S }, required: ['n', 'title', 'nodeIds', 'details'], propertyOrdering: ['n', 'title', 'nodeIds', 'details'] } },
     animation: STR_ARR,
     postfx: STR_ARR,
     tweakNotes: STR_ARR,
     uncertainties: STR_ARR,
+    tutorialQueries: STR_ARR,
     confidence: { type: 'NUMBER' },
   },
-  required: ['observations', 'summary', 'isLikelyTouchDesigner', 'techniques', 'nodes', 'connections', 'steps', 'animation', 'postfx', 'tweakNotes', 'uncertainties', 'confidence'],
-  propertyOrdering: ['observations', 'summary', 'isLikelyTouchDesigner', 'techniques', 'nodes', 'connections', 'steps', 'animation', 'postfx', 'tweakNotes', 'uncertainties', 'confidence'],
+  required: ['observations', 'summary', 'isLikelyTouchDesigner', 'techniques', 'nodes', 'connections', 'steps', 'animation', 'postfx', 'tweakNotes', 'uncertainties', 'tutorialQueries', 'confidence'],
+  propertyOrdering: ['observations', 'summary', 'isLikelyTouchDesigner', 'techniques', 'nodes', 'connections', 'steps', 'animation', 'postfx', 'tweakNotes', 'uncertainties', 'tutorialQueries', 'confidence'],
 };
 
 // Описание для промта (и для провайдеров без responseSchema).
@@ -51,11 +52,12 @@ export const SCHEMA_DESCRIPTION = `{
     "params": [{ "name": string, "value": string, "approximate": boolean }],  // key params only, value as text
     "purpose": string
   }],
-  "connections": [{ "from": string, "to": string, "inputIndex": integer, "uncertain": boolean }],
+  "connections": [{ "from": string, "to": string, "kind": "wire"|"reference", "inputIndex": integer, "uncertain": boolean }],  // wire = real wire into input N; reference = parameter/export link
   "steps": [{ "n": integer, "title": string, "nodeIds": [string], "details": string }],  // ordered build steps
   "animation": [string],                   // what moves it: CHOPs, expressions, looping
   "postfx": [string],                      // post-processing and color
   "tweakNotes": [string],                  // what to tune by eye to match the original
   "uncertainties": [string],               // what could not be determined from the frames
+  "tutorialQueries": [string],             // 2-4 English YouTube search phrases for tutorials on these techniques
   "confidence": number                     // 0..1
 }`;

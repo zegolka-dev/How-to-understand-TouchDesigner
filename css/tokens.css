@@ -54,8 +54,8 @@
   --code-bg: rgba(20, 24, 40, .06);
 
   /* семейства операторов TouchDesigner */
-  --fam-top: #7b4fd6; --fam-chop: #2e9e4f; --fam-sop: #2f6fd8;
-  --fam-dat: #c04ca8; --fam-comp: #5b6b80; --fam-mat: #c98a12;
+  --fam-top: #6a3fc7; --fam-chop: #1f7a3a; --fam-sop: #2459b8;
+  --fam-dat: #a8338f; --fam-comp: #4b5a6d; --fam-mat: #8f5f00;
 }
 
 html[data-theme="dark"] {

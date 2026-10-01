@@ -1,7 +1,7 @@
 // SVG-схема нод: раскладка по слоям слева направо (топологическая сортировка), feedback-рёбра — отдельной дугой.
 import { svgEl } from '../core/dom.js';
 
-export const NODE_W = 176, NODE_H = 58, GAP_X = 64, GAP_Y = 22, PAD = 24;
+export const NODE_W = 176, NODE_H = 64, HEAD_H = 20, GAP_X = 72, GAP_Y = 28, PAD = 28;
 
 /** Чистая раскладка (без DOM) — удобно тестировать. */
 export function layoutGraph(nodes, connections) {
@@ -80,7 +80,7 @@ export function layoutGraph(nodes, connections) {
 
   // порты входов: по максимальному inputIndex входящих рёбер
   const inPorts = new Map(ids.map((id) => [id, 1]));
-  for (const e of edges) inPorts.set(e.to, Math.max(inPorts.get(e.to), e.inputIndex + 1));
+  for (const e of edges) if (e.kind !== 'reference') inPorts.set(e.to, Math.max(inPorts.get(e.to), e.inputIndex + 1));
 
   return { coords, edges, width, height, layers, inPorts, bottom: PAD + maxCount * NODE_H + (maxCount - 1) * GAP_Y };
 }
@@ -98,7 +98,9 @@ export function renderGraph(data, opts = {}) {
   const defs = svgEl('defs');
   const marker = svgEl('marker', { id: 'g-arrow', viewBox: '0 0 10 10', refX: '9', refY: '5', markerWidth: '7', markerHeight: '7', orient: 'auto-start-reverse' });
   marker.append(svgEl('path', { d: 'M0 0 L10 5 L0 10 z', class: 'g-arrow' }));
-  defs.append(marker);
+  const marker2 = svgEl('marker', { id: 'g-arrow-ref', viewBox: '0 0 10 10', refX: '9', refY: '5', markerWidth: '7', markerHeight: '7', orient: 'auto-start-reverse' });
+  marker2.append(svgEl('path', { d: 'M0 0 L10 5 L0 10 z', class: 'g-arrow-ref' }));
+  defs.append(marker, marker2);
   svg.append(defs);
 
   const edgeLayer = svgEl('g', { class: 'g-edges' });
@@ -106,22 +108,31 @@ export function renderGraph(data, opts = {}) {
   svg.append(edgeLayer, nodeLayer);
 
   const edgeEls = [];
+  const portY = (id, k) => HEAD_H + ((NODE_H - HEAD_H) * (k + 1)) / (L.inPorts.get(id) + 1);
   for (const e of L.edges) {
     const a = L.coords.get(e.from), b = L.coords.get(e.to);
+    const ref = e.kind === 'reference';
     let d;
     if (e.back) {
+      // обратная связь (feedback) — дуга под схемой
       const y = L.bottom + 30;
       const x1 = a.x + NODE_W / 2, x2 = b.x + NODE_W / 2;
       d = `M${x1} ${a.y + NODE_H} C${x1} ${y}, ${x2} ${y}, ${x2} ${b.y + NODE_H}`;
-    } else {
-      const ports = L.inPorts.get(e.to);
+    } else if (ref) {
+      // ссылка/экспорт: входит в ноду сверху, не в порт — в TouchDesigner это не провод
       const x1 = a.x + NODE_W, y1 = a.y + NODE_H / 2;
-      const x2 = b.x, y2 = b.y + (NODE_H * (e.inputIndex + 1)) / (ports + 1);
+      const x2 = b.x + NODE_W / 2, y2 = b.y;
+      d = `M${x1} ${y1} C${x1 + 40} ${y1}, ${x2} ${y2 - 40}, ${x2} ${y2}`;
+    } else {
+      const x1 = a.x + NODE_W + 6, y1 = a.y + HEAD_H + (NODE_H - HEAD_H) / 2;
+      const x2 = b.x - 6, y2 = b.y + portY(e.to, e.inputIndex);
       const dx = Math.max(24, (x2 - x1) / 2);
       d = `M${x1} ${y1} C${x1 + dx} ${y1}, ${x2 - dx} ${y2}, ${x2} ${y2}`;
     }
-    const p = svgEl('path', { d, class: 'g-edge' + (e.uncertain ? ' is-uncertain' : '') + (e.back ? ' is-back' : ''), 'marker-end': 'url(#g-arrow)' });
+    const p = svgEl('path', { d, class: 'g-edge' + (e.uncertain ? ' is-uncertain' : '') + (e.back ? ' is-back' : '') + (ref ? ' is-ref' : ''), 'marker-end': ref || e.back ? 'url(#g-arrow-ref)' : 'url(#g-arrow)' });
     p.dataset.from = e.from; p.dataset.to = e.to;
+    const tt = svgEl('title'); tt.textContent = ref || e.back ? `${e.from} → ${e.to} (${opts.refLabel || 'reference'})` : `${e.from} → ${e.to} [${opts.inputLabel || 'input'} ${e.inputIndex}]`;
+    p.append(tt);
     edgeLayer.append(p);
     edgeEls.push(p);
   }
@@ -131,13 +142,26 @@ export function renderGraph(data, opts = {}) {
     const { x, y } = L.coords.get(n.id);
     const g = svgEl('g', { class: 'g-node', transform: `translate(${x} ${y})`, tabindex: '0', role: 'button', 'data-fam': n.family, 'aria-label': opts.nodeLabel ? opts.nodeLabel(n) : `${n.type} ${n.id}` });
     g.dataset.id = n.id;
+    const ports = L.inPorts.get(n.id);
+    const hasIn = L.edges.some((e) => e.to === n.id && e.kind !== 'reference' && !e.back);
     g.append(
-      svgEl('rect', { class: 'g-body', width: NODE_W, height: NODE_H, rx: 14 }),
-      svgEl('rect', { class: 'g-accent', x: 0, y: 10, width: 4, height: NODE_H - 20, rx: 2 }),
-      Object.assign(svgEl('text', { class: 'g-id', x: 16, y: 25 }), { textContent: clip(n.id, 20) }),
-      Object.assign(svgEl('text', { class: 'g-type', x: 16, y: 44 }), { textContent: clip(n.type, 24) }),
-      svgEl('circle', { class: 'g-port', cx: NODE_W, cy: NODE_H / 2, r: 3.5 }),
+      svgEl('rect', { class: 'g-body', width: NODE_W, height: NODE_H, rx: 10 }),
+      svgEl('path', { class: 'g-head', d: `M0 ${HEAD_H} V10 a10 10 0 0 1 10 -10 H${NODE_W - 10} a10 10 0 0 1 10 10 V${HEAD_H} Z` }),
+      Object.assign(svgEl('text', { class: 'g-type', x: 10, y: 14 }), { textContent: clip(n.type, 22) }),
+      Object.assign(svgEl('text', { class: 'g-id', x: 12, y: HEAD_H + 28 }), { textContent: clip(n.id, 20) }),
+      svgEl('rect', { class: 'g-port', x: NODE_W, y: HEAD_H + (NODE_H - HEAD_H) / 2 - 5, width: 6, height: 10, rx: 1.5 }),
     );
+    if (hasIn) {
+      for (let k = 0; k < ports; k++) {
+        g.append(svgEl('rect', { class: 'g-port', x: -6, y: portY(n.id, k) - 5, width: 6, height: 10, rx: 1.5 }));
+        if (ports > 1) g.append(Object.assign(svgEl('text', { class: 'g-portn', x: 5, y: portY(n.id, k) + 4 }), { textContent: String(k) }));
+      }
+    }
+    const step = opts.stepOf?.(n.id);
+    if (step) {
+      const bx = NODE_W - 16, by = HEAD_H + 22;
+      g.append(svgEl('circle', { class: 'g-step', cx: bx, cy: by, r: 10 }), Object.assign(svgEl('text', { class: 'g-stepn', x: bx, y: by + 4 }), { textContent: String(step) }));
+    }
     const title = svgEl('title'); title.textContent = `${n.type} — ${n.id}${n.purpose ? ': ' + n.purpose : ''}`;
     g.prepend(title);
     const select = () => opts.onSelect?.(n.id);

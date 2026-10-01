@@ -12,7 +12,7 @@ test('разбор: кадры, запрос, результат, схема, с
   await expect(page.locator('#result .res-card').first()).toBeVisible();
 
   // разделы и граф
-  await expect(page.locator('#result .res-card')).toHaveCount(9); // 8 разделов + чат
+  await expect(page.locator('#result .res-card')).toHaveCount(10); // 8 разделов + уроки + чат
   await expect(page.locator('.g-node')).toHaveCount(8);
   await expect(page.locator('.g-edge.is-back')).toHaveCount(1);
   await expect(page.locator('.g-edge.is-uncertain')).toHaveCount(1);
@@ -98,4 +98,19 @@ test('битый JSON: восстановление и сырой текст', a
   await expect(page.locator('.res-raw')).toBeVisible();
   await expect(page.locator('.res-raw h3')).toHaveText('Заголовок');
   expect(await page.evaluate(() => window.__xss)).toBeUndefined();
+});
+
+test('схема как в TD: ссылки отдельно от проводов, номера шагов, уроки', async ({ page }) => {
+  await mockNetwork(page);
+  await presetStorage(page);
+  await page.goto('/index.html#analyze');
+  await loadTestVideo(page);
+  await page.click('#go');
+  await expect(page.locator('.g-node').first()).toBeVisible();
+  // Lfo CHOP → Transform TOP — разные семейства, значит ссылка, а не провод
+  await expect(page.locator('.g-edge.is-ref[data-from="lfo1"][data-to="transform1"]')).toHaveCount(1);
+  await expect(page.locator('.g-node[data-id="circle1"] .g-stepn')).toHaveText('1');
+  await expect(page.locator('.res-learn a')).toHaveCount(2);
+  await expect(page.locator('.res-learn a').first()).toHaveAttribute('href', /youtube\.com\/results\?search_query=touchdesigner%20feedback/);
+  await page.locator('section.res-graph').screenshot({ path: 'tests/screenshots/graph.png' });
 });
