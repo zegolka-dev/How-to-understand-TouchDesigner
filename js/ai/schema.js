@@ -9,6 +9,7 @@ const STR_ARR = { type: 'ARRAY', items: S };
 export const RESPONSE_SCHEMA = {
   type: 'OBJECT',
   properties: {
+    observations: STR_ARR,
     summary: S,
     isLikelyTouchDesigner: B,
     techniques: { type: 'ARRAY', items: { type: 'OBJECT', properties: { name: S, why: S }, required: ['name', 'why'], propertyOrdering: ['name', 'why'] } },
@@ -33,12 +34,13 @@ export const RESPONSE_SCHEMA = {
     uncertainties: STR_ARR,
     confidence: { type: 'NUMBER' },
   },
-  required: ['summary', 'isLikelyTouchDesigner', 'techniques', 'nodes', 'connections', 'steps', 'animation', 'postfx', 'tweakNotes', 'uncertainties', 'confidence'],
-  propertyOrdering: ['summary', 'isLikelyTouchDesigner', 'techniques', 'nodes', 'connections', 'steps', 'animation', 'postfx', 'tweakNotes', 'uncertainties', 'confidence'],
+  required: ['observations', 'summary', 'isLikelyTouchDesigner', 'techniques', 'nodes', 'connections', 'steps', 'animation', 'postfx', 'tweakNotes', 'uncertainties', 'confidence'],
+  propertyOrdering: ['observations', 'summary', 'isLikelyTouchDesigner', 'techniques', 'nodes', 'connections', 'steps', 'animation', 'postfx', 'tweakNotes', 'uncertainties', 'confidence'],
 };
 
 // Описание для промта (и для провайдеров без responseSchema).
 export const SCHEMA_DESCRIPTION = `{
+  "observations": [string],                // 5-10 concrete visual facts seen on the frames (write first)
   "summary": string,                       // 2–4 sentences: what is on the video and how it moves
   "isLikelyTouchDesigner": boolean,
   "techniques": [{ "name": string, "why": string }],   // techniques used and what each gives

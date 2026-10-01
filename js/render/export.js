@@ -42,7 +42,9 @@ export function toMarkdown(record) {
     L.push(record.raw || '');
   } else {
     if (!r.isLikelyTouchDesigner) L.push(`> ${t('result.notTd')}`, '');
-    L.push(`## ${t('result.summary')}`, r.summary, '', `${t('result.confidence')}: ${Math.round(r.confidence * 100)}%`, '');
+    L.push(`## ${t('result.summary')}`, r.summary, '');
+    if (r.observations?.length) { L.push(`### ${t('result.observations')}`); r.observations.forEach((x) => L.push('- ' + x)); L.push(''); }
+    L.push(`${t('result.confidence')}: ${Math.round(r.confidence * 100)}%`, '');
     if (r.techniques.length) {
       L.push(`## ${t('result.techniques')}`);
       r.techniques.forEach((x) => L.push(`- **${x.name}**${x.why ? ' — ' + x.why : ''}`));

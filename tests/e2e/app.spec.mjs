@@ -139,7 +139,8 @@ test.describe('ошибки API', () => {
     await expect(page.locator('#result .g-node').first()).toBeVisible({ timeout: 20000 });
     expect(hits.filter((p) => p.includes('gemini-9.9-flash:')).length).toBe(2); // запрос + автоповтор
     expect(hits.some((p) => p.includes('gemini-9.9-flash-lite:'))).toBe(true);
-    await expect(page.locator('#provider-line')).toContainText('gemini-9.9-flash-lite');
+    await expect(page.locator('#quick-model')).toHaveValue('gemini-9.9-flash-lite');
+    await expect(page.locator('#provider-line')).toContainText('lite');
   });
 
   test('все модели в лимите: понятная ошибка, список опробованных, запасной провайдер', async ({ page }) => {
@@ -215,4 +216,26 @@ test.describe('стекло и контраст', () => {
       expect(worst, theme).toBeGreaterThanOrEqual(4.5);
     }
   });
+});
+
+test('быстрое переключение провайдера и модели на экране разбора', async ({ page }) => {
+  const external = await mockNetwork(page);
+  await presetStorage(page, { 'openrouter.key': FAKE_OR, 'provider.active': 'openrouter', 'openrouter.model': 'google/gemma-test:free' });
+  await page.goto('/index.html#analyze');
+  await expect(page.locator('#provider-line')).toContainText('OpenRouter заметно слабее');
+  await page.locator('[data-seg="quick-provider"] [data-value="gemini"]').click();
+  await expect(page.locator('#quick-model option')).toHaveCount(3); // загружено через ListModels
+  await page.selectOption('#quick-model', 'gemini-9.9-flash');
+  await expect(page.locator('#provider-line')).toContainText('Google Gemini · gemini-9.9-flash');
+  await loadTestVideo(page);
+  await page.click('#go');
+  await expect(page.locator('p.res-summary')).toBeVisible();
+  await expect(page.locator('section.res-summary .res-list li')).toHaveCount(3);
+  expect(external.some((r) => r.url.includes('gemini-9.9-flash:generateContent'))).toBe(true);
+  // промт просит сначала наблюдения
+  const body = JSON.parse(external.find((r) => r.url.includes(':generateContent')).body);
+  expect(body.generationConfig.responseSchema.propertyOrdering[0]).toBe('observations');
+  // настройки синхронизированы
+  await page.click('#tab-settings');
+  await expect(page.locator('[data-seg="provider"] [data-value="gemini"]')).toHaveAttribute('aria-checked', 'true');
 });

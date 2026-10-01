@@ -68,7 +68,8 @@ export function renderResult(root, record) {
   if (!r.isLikelyTouchDesigner) head.append(h('p.status.status--warn', {}, icon('alert', 'icon--sm'), h('span', { text: t('result.notTd') })));
 
   /* 1. Что на видео */
-  root.append(section('res-summary', 'film', 'result.summary', inlineEl('p.res-summary', r.summary || '—')));
+  root.append(section('res-summary', 'film', 'result.summary', inlineEl('p.res-summary', r.summary || '—'),
+    r.observations?.length ? [h('h3.res-sub', { text: t('result.observations') }), list(r.observations, false)] : null));
 
   /* 2. Приёмы */
   root.append(section('res-tech', 'sparkles', 'result.techniques',

@@ -7,7 +7,7 @@ import { segmented, setStatus, errorText } from './ui.js';
 import { loadVideo, extractFrames, makeThumbs } from '../video/extract.js';
 import { computeMetrics } from '../video/metrics.js';
 import { checkFile, checkDuration, estimateRequestBytes, estimateFromAvg, FRAMES, WARN_REQUEST } from '../video/limits.js';
-import { getActiveId, setActiveId, getFallbackId, getProvider, getModel, setModel, getAltModel, hasKey } from '../providers/registry.js';
+import { getActiveId, setActiveId, getFallbackId, getProvider, getModel, setModel, getAltModel, hasKey, getCachedModels, refreshModels } from '../providers/registry.js';
 import { analyze } from '../ai/service.js';
 import { renderResult } from '../render/result.js';
 import { renderChat } from './chat.js';
@@ -62,8 +62,13 @@ export function initAnalyze() {
   el.go.addEventListener('click', () => run());
   el.cancel.addEventListener('click', () => S.abort?.abort());
 
-  bus.on('provider', updateProviderLine);
-  bus.on('model', updateProviderLine);
+  const quickSeg = segmented($('[data-seg="quick-provider"]'), { value: getActiveId(), onChange: (v) => setActiveId(v) });
+  $('#quick-model').addEventListener('change', (e) => setModel(getActiveId(), e.target.value));
+  bus.on('provider', ({ active }) => { quickSeg.set(active); fillQuickModel(); updateProviderLine(); });
+  bus.on('model', () => { fillQuickModel(); updateProviderLine(); });
+  bus.on('models', () => { fillQuickModel(); });
+  bus.on('lang', () => { quickSeg.place(); fillQuickModel(); });
+  fillQuickModel();
   bus.on('keys', () => { updateProviderLine(); updateGo(); });
   updateLevelHint(); updateProviderLine(); updateSize(); updateGo();
 }
@@ -78,14 +83,39 @@ function syncSlider() {
 
 function updateLevelHint() { el['level-hint'].textContent = t('level.hint.' + currentLevel()); }
 
+let loadingModels = false;
+function fillQuickModel() {
+  const id = getActiveId();
+  const sel = $('#quick-model');
+  const models = getCachedModels(id);
+  const cur = getModel(id);
+  sel.replaceChildren();
+  if (!models.length) {
+    sel.append(h('option', { value: '', text: hasKey(id) ? t('settings.loadingModels') : t('settings.noModels') }));
+    sel.disabled = true;
+    if (hasKey(id) && !loadingModels) {
+      loadingModels = true;
+      refreshModels(id).catch(() => {}).finally(() => { loadingModels = false; if (getCachedModels(id).length) fillQuickModel(); });
+    }
+    return;
+  }
+  sel.disabled = false;
+  for (const m of models) sel.append(h('option', { value: m.id, text: m.id }));
+  sel.value = models.some((m) => m.id === cur) ? cur : models[0].id;
+}
+
 function updateProviderLine() {
   const id = getActiveId();
   const p = getProvider(id);
+  const model = getModel(id);
+  // бесплатные модели OpenRouter и flash-lite заметно хуже разбирают видео — предупреждаем
+  const weak = id === 'openrouter' ? t('analyze.weakOpenRouter') : /lite/.test(model) ? t('analyze.weakLite') : '';
   el['provider-line'].replaceChildren(
-    icon('key', 'icon--sm'),
-    h('span', { text: hasKey(id) ? t('analyze.via', { provider: p.name, model: getModel(id) || t('analyze.modelAuto') }) : t('analyze.noKeyLine', { provider: p.name }) }),
+    icon(hasKey(id) && !weak ? 'key' : 'alert', 'icon--sm'),
+    h('span', { text: !hasKey(id) ? t('analyze.noKeyLine', { provider: p.name }) : weak || t('analyze.via', { provider: p.name, model: model || t('analyze.modelAuto') }) }),
   );
   el['provider-line'].classList.add('row');
+  el['provider-line'].classList.toggle('status--warn', !!weak || !hasKey(id));
 }
 
 function updateSize() {

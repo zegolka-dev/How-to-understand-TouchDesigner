@@ -32,11 +32,16 @@ const METRICS = `HOW TO USE THE METRICS
 - brightness and dominant colors → choose Level TOP / Ramp TOP / Lookup TOP settings and Constant colors; quote the hex colors where useful.
 - Frames are sparse: fast details between samples are invisible; say so when relevant.`;
 
+const METHOD = `METHOD (follow in this order; the JSON field order mirrors it)
+1. "observations": first list 5-10 concrete things you actually see across the frames: 2D or 3D, shapes and their count, colors and gradients, how things move between frames, trails/smearing, symmetry or repetition, distortion, grain/noise, glow, edges, camera motion, text, background.
+2. Match each observation to the recipe cheat sheet and pick the simplest network that reproduces ALL of them together.
+3. Then write nodes, connections and steps so that a person following them gets a result that clearly resembles the video. Prefer one concrete, buildable network with real starting values over vague lists of possibilities; put alternatives only into "uncertainties".`;
+
 const HONESTY = `RULES AGAINST MAKING THINGS UP
 - Describe only what is visible or strongly implied. When a technique cannot be identified with confidence, write "probably"/"possibly" (in the answer language), give 1–2 alternatives, and add an entry to "uncertainties".
 - Mark every value you guessed by eye with "approximate": true. Mark guessed wiring with "uncertain": true.
 - If the video does not look like TouchDesigner (e.g. live footage, After Effects, Blender, game capture), set "isLikelyTouchDesigner": false and explain in "summary" how one could still approximate it in TouchDesigner.
-- "confidence" is your honest overall confidence 0..1 that following the steps reproduces the look.
+- "confidence" is your honest overall confidence 0..1 that following the steps reproduces the look. Calibrate it: 0.85-0.95 = a classic recipe is clearly visible (feedback trails, noise displace, instancing grid, kaleidoscope); 0.6-0.8 = the core technique is clear, some parameters or details are guessed; 0.35-0.55 = two or more quite different approaches are equally plausible; below 0.3 = you cannot tell. Do not lower it just because exact numeric values are unknown: approximate values are expected and marked separately.
 - Explain working expressions literally (absTime.seconds*0.2, me.time.frame, op('lfo1')['chan1'], math.sin(absTime.seconds)), and where to type them (click the parameter, switch to expression mode).
 - Keep it lean: 4–12 nodes, at most 10 steps, no filler, no generic TouchDesigner tutorial text — only what is needed to rebuild this look.`;
 
@@ -49,10 +54,10 @@ const LEVELS = {
 export function buildSystem({ lang = 'en', level = 'mid' } = {}) {
   const L = LANG_NAME[lang] || 'English';
   return [
-    ROLE, NAMING, RECIPES, METRICS, HONESTY,
+    ROLE, NAMING, RECIPES, METRICS, METHOD, HONESTY,
     LEVELS[level] || LEVELS.mid,
     `OUTPUT FORMAT\nReturn ONLY one JSON object (no Markdown, no code fences, no commentary) with this shape:\n${SCHEMA_DESCRIPTION}`,
-    `LANGUAGE: write every human-readable string (summary, why, purpose, titles, details, animation, postfx, tweakNotes, uncertainties) in ${L}. Keep operator names, parameter labels, node ids and expressions in English exactly as in TouchDesigner.`,
+    `LANGUAGE: write every human-readable string (summary, observations, why, purpose, titles, details, animation, postfx, tweakNotes, uncertainties) in ${L}. Keep operator names, parameter labels, node ids and expressions in English exactly as in TouchDesigner.`,
   ].join('\n\n');
 }
 

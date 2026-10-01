@@ -7,6 +7,7 @@ export const FAKE_OR = 'sk-or-v1-test000000000000000000000000';
 const MP4 = fileURLToPath(new URL('../fixtures/test.mp4', import.meta.url));
 
 export const ANALYSIS = {
+  observations: ['Белый круг на цветном фоне', 'Круг двигается по горизонтали', 'За кругом тянется шлейф'],
   summary: 'Цветной фон и белый круг, который ходит **влево-вправо** и оставляет шлейф.',
   isLikelyTouchDesigner: true,
   techniques: [{ name: 'Feedback trails', why: 'шлейф <img src=x onerror="window.__xss=1">' }, { name: 'Transform', why: 'движение' }],

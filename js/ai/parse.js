@@ -134,6 +134,7 @@ export function normalize(o) {
   if (confidence > 1 && confidence <= 100) confidence /= 100;
   return {
     summary: str(o.summary),
+    observations: strArr(o.observations),
     isLikelyTouchDesigner: o.isLikelyTouchDesigner === undefined ? true : bool(o.isLikelyTouchDesigner),
     techniques, nodes, connections, steps,
     animation: strArr(o.animation),

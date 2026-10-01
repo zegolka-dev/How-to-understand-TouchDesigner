@@ -140,7 +140,17 @@
           <label class="label" for="note" data-i18n="analyze.note"></label>
           <textarea class="textarea" id="note" maxlength="500" rows="2" data-i18n-attr="placeholder:analyze.notePh"></textarea>
         </div>
-        <p class="hint" id="provider-line"></p>
+        <div class="field">
+          <span class="label" id="lbl-quick-provider" data-i18n="analyze.provider"></span>
+          <div class="seg seg--block glass-inset" role="radiogroup" data-seg="quick-provider" aria-labelledby="lbl-quick-provider">
+            <span class="seg__thumb" aria-hidden="true"></span>
+            <button class="seg__opt" role="radio" data-value="gemini">Gemini</button>
+            <button class="seg__opt" role="radio" data-value="openrouter">OpenRouter</button>
+          </div>
+          <label class="sr-only" for="quick-model" data-i18n="settings.model"></label>
+          <select class="select" id="quick-model"></select>
+          <p class="hint" id="provider-line"></p>
+        </div>
         <div class="row">
           <button type="button" class="btn btn--primary btn--lg" id="go" disabled><svg class="icon" aria-hidden="true"><use href="#i-sparkles"/></svg><span data-i18n="analyze.go"></span></button>
           <button type="button" class="btn btn--ghost" id="cancel" hidden><svg class="icon" aria-hidden="true"><use href="#i-x"/></svg><span data-i18n="common.cancel"></span></button>
