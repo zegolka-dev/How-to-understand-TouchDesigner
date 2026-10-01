@@ -91,3 +91,27 @@ html[data-theme="dark"] { --node-fill: rgba(30, 33, 46, .78); --node-stroke: rgb
 .switch:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
 html[data-theme="dark"] .switch:not(:checked) { background: rgba(255,255,255,.18); }
 @media (forced-colors: active) { .switch { border: 1px solid CanvasText; } }
+
+/* чат */
+.chat__log { display: grid; gap: var(--s3); }
+.chat__log:empty { display: none; }
+.msg { max-width: 92%; padding: var(--s3) var(--s4); border-radius: 20px; overflow-wrap: anywhere; }
+.msg--user { justify-self: end; background: var(--accent-fill); color: var(--on-accent); border-bottom-right-radius: 6px; white-space: pre-wrap; }
+.msg--model { justify-self: start; background: var(--glass-fill-inset); border: 1px solid var(--hairline); border-bottom-left-radius: 6px; }
+.chat__form { display: flex; gap: var(--s2); align-items: flex-end; }
+.chat__input { flex: 1; min-height: 52px; }
+@media (max-width: 520px) { .chat__form { flex-direction: column; align-items: stretch; } }
+
+/* история */
+.history__bar { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s2); padding: var(--s3) var(--s4); border-radius: 22px; }
+.spacer { flex: 1; }
+.history__list { display: grid; gap: var(--s4); }
+@media (min-width: 760px) { .history__list { grid-template-columns: 1fr 1fr; } }
+.history__empty { justify-items: center; text-align: center; color: var(--text-2); padding: var(--s7) var(--s4); }
+.hcard { padding: 0; overflow: hidden; gap: 0; }
+.hcard__thumbs { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; height: 96px; border-radius: var(--r-card) var(--r-card) 0 0; overflow: hidden; }
+.hcard__thumbs img { width: 100%; height: 100%; object-fit: cover; }
+.hcard__body { display: grid; gap: var(--s2); padding: var(--s4); }
+.hcard__title { font-size: var(--fs-md); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.hcard__meta { font-size: var(--fs-xs); color: var(--text-2); }
+.hcard__summary { font-size: var(--fs-sm); color: var(--text-2); display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }

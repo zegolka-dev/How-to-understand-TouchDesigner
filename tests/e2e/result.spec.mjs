@@ -12,7 +12,7 @@ test('разбор: кадры, запрос, результат, схема, с
   await expect(page.locator('#result .res-card').first()).toBeVisible();
 
   // разделы и граф
-  await expect(page.locator('#result .res-card')).toHaveCount(8);
+  await expect(page.locator('#result .res-card')).toHaveCount(9); // 8 разделов + чат
   await expect(page.locator('.g-node')).toHaveCount(8);
   await expect(page.locator('.g-edge.is-back')).toHaveCount(1);
   await expect(page.locator('.g-edge.is-uncertain')).toHaveCount(1);

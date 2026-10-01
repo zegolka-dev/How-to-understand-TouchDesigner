@@ -5,7 +5,8 @@ import { initI18n, setLang, getLang } from './core/i18n.js';
 import { initTheme, setThemeMode, getThemeMode } from './core/theme.js';
 import { segmented, initNav } from './views/ui.js';
 import { initSettings } from './views/settings.js';
-import { initAnalyze } from './views/analyze.js';
+import { initAnalyze, openRecord } from './views/analyze.js';
+import { initHistory } from './views/history.js';
 import { openOnboarding, needsOnboarding } from './views/onboarding.js';
 
 function initRefraction() {
@@ -36,6 +37,7 @@ function start() {
   bus.on('lang', () => nav.place());
   initSettings();
   initAnalyze();
+  initHistory({ open: (rec) => { nav.go('analyze'); openRecord(rec); } });
   if (needsOnboarding()) openOnboarding();
 }
 

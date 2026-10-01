@@ -10,6 +10,8 @@ import { checkFile, checkDuration, estimateRequestBytes, estimateFromAvg, FRAMES
 import { getActiveId, setActiveId, getFallbackId, getProvider, getModel, hasKey } from '../providers/registry.js';
 import { analyze } from '../ai/service.js';
 import { renderResult } from '../render/result.js';
+import { renderChat } from './chat.js';
+import { buildContextTurn } from '../ai/prompt.js';
 import { openOnboarding } from './onboarding.js';
 
 const S = {
@@ -30,7 +32,7 @@ export function initAnalyze() {
   // уровень объяснения
   const level = ['beginner', 'mid', 'pro'].includes(ls.get('level')) ? ls.get('level') : 'mid';
   const levelSeg = segmented($('[data-seg="level"]'), { value: level, onChange: (v) => { ls.set('level', v); updateLevelHint(); } });
-  bus.on('lang', () => { levelSeg.place(); updateLevelHint(); updateProviderLine(); updateSize(); renderMetrics(); });
+  bus.on('lang', () => { levelSeg.place(); updateLevelHint(); updateProviderLine(); updateSize(); renderMetrics(); if (S.session) showRecord(S.session.record); });
 
   // число кадров
   const n = Math.min(FRAMES.max, Math.max(FRAMES.min, parseInt(ls.get('frames'), 10) || FRAMES.def));
@@ -191,7 +193,7 @@ async function run(providerId = getActiveId()) {
       result: res.data, raw: res.data ? null : res.raw, repaired: res.repaired,
       chat: [], doneSteps: [],
     };
-    S.session = { record, history: [res.firstTurn, { role: 'model', parts: [{ text: res.raw }] }] };
+    S.session = { record, history: [res.firstTurn, { role: 'model', parts: [{ text: res.raw }] }], live: true };
     setStatus(el['run-status'], res.data ? 'ok' : 'warn', t(res.data ? (res.repaired ? 'analyze.doneRepaired' : 'analyze.done') : 'analyze.doneRaw'));
     showRecord(record, { scroll: true });
     bus.emit('analysis', record);
@@ -226,10 +228,16 @@ function handleError(e, providerId) {
 }
 
 /** Показ записи (новой или из истории). */
-export function showRecord(record, { scroll = false, history } = {}) {
-  if (history) S.session = { record, history };
+export function showRecord(record, { scroll = false } = {}) {
   el.result.hidden = false;
-  renderResult(el.result, record);
+  const { chatSlot } = renderResult(el.result, record);
+  if (S.session?.record === record) renderChat(chatSlot, S.session);
   if (scroll) el.result.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' });
 }
 
+/** Открыть запись из истории: кадров нет, контекст для вопросов — текст разбора. */
+export function openRecord(record) {
+  const context = buildContextTurn({ metrics: record.metrics, result: record.result, raw: record.raw, note: record.note });
+  S.session = { record, history: [context, { role: 'model', parts: [{ text: 'OK' }] }], live: false };
+  showRecord(record, { scroll: true });
+}
